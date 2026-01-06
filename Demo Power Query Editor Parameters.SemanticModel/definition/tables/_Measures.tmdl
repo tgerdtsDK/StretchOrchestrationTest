@@ -1,7 +1,7 @@
 table _Measures
 	lineageTag: 1aa7f2a6-1203-4b5c-b303-2f26ab41bfd5
 
-	column 'Remove when 1 measure is created'
+	column 'Remove'
 		dataType: string
 		lineageTag: d74a7dea-687a-4154-9300-2b386a2458a4
 		summarizeBy: none
