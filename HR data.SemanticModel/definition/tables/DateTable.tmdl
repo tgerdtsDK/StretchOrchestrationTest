@@ -1,0 +1,125 @@
+table DateTable
+	lineageTag: eb8bbadb-fae8-4d15-b986-08ec0a291c48
+	dataCategory: Time
+
+	column Date
+		isKey
+		formatString: Long Date
+		lineageTag: bc8808e5-19e5-422f-9b9b-f260a0e2b48f
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Date]
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Week
+		formatString: 0
+		lineageTag: 92208a83-2217-415e-b5b6-cf227954421b
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Week]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Year
+		formatString: 0
+		lineageTag: 2d2093b6-2698-4af9-a4df-b14f62206272
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Year]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month
+		lineageTag: ccf7f7e6-76c4-4eb7-a4aa-1de7eb6e5436
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Month]
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthName
+		lineageTag: d836484f-16b8-4e96-bb7f-e47a93cffec5
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [MonthName]
+
+		annotation SummarizationSetBy = Automatic
+
+	column YearMonth
+		lineageTag: 88b52942-4cc8-4a5f-ac44-2d6b9491993c
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [YearMonth]
+
+		annotation SummarizationSetBy = Automatic
+
+	column YearMonthName
+		lineageTag: d2e536f6-be04-42f1-a623-bea972a6306b
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [YearMonthName]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Day
+		formatString: 0
+		lineageTag: 51420f21-b9c0-4054-96ab-4456104a98bb
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Day]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quarter
+		lineageTag: da9941c3-8cda-4b85-a45c-6c25dfeca8b9
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Quarter]
+
+		annotation SummarizationSetBy = Automatic
+
+	column WeekYear
+		lineageTag: 1e05fe50-399e-4a90-8bc3-179671528b8f
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [WeekYear]
+
+		annotation SummarizationSetBy = Automatic
+
+	column WeekDay
+		lineageTag: a8c762e4-da91-4f5d-a944-623f03b218d1
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [WeekDay]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DateTable = calculated
+		mode: import
+		source = ```
+				
+				VAR MinDate = DATE(2010, 1, 1)  -- Adjust to your dataset's minimum date
+				VAR MaxDate = DATE(2025, 12, 31) -- Adjust to your dataset's maximum date
+				
+				RETURN
+				ADDCOLUMNS (
+				    CALENDAR ( MinDate, MaxDate ),
+				    "Week", WEEKNUM([Date]),
+				    "Year", YEAR([Date]),
+				    "Month", FORMAT([Date], "MM"),  -- Ensure two-digit month format
+				    "MonthName", FORMAT([Date], "MMMM"), 
+				    "YearMonth", FORMAT([Date], "YYYYMM"),  -- Year and Month in YYYYMM format
+				    "YearMonthName", FORMAT([Date], "MMMM - YYYY"),  -- Full Month and Year
+				    "Day", DAY([Date]),
+				    "Quarter", "Q" & FORMAT(CEILING(MONTH([Date]) / 3, 1), "0"),
+				    "WeekYear", FORMAT(WEEKNUM([Date]), "00") & "-" & FORMAT(YEAR([Date]), "0000"),  -- Correct week and year format
+				    "WeekDay", FORMAT([Date], "dddd")
+				)
+				
+				```
+
+	annotation PBI_Id = 701b7eb0b5fa473586d6e34351a4cbb3
+

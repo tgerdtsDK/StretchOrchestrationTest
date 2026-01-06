@@ -1,0 +1,55 @@
+/// Test of warehouse parameter switching between STRETCHDEVELOPER and STRETCH_CORTEX.
+expression 'p_Snowflake Warehouse Name' = "STRETCH_CORTEX" meta [IsParameterQuery=true, List={"STRETCHDEVELOPER", "STRETCH_CORTEX"}, DefaultValue="STRETCHDEVELOPER", Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 1e7a5a42-4412-4914-a813-8b9cb5c15a81
+	queryGroup: Parameters
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text
+
+expression 'p_Snowflake Server Name' = "vo19612.west-europe.azure.snowflakecomputing.com" meta [IsParameterQuery=true, List={"vo19612.west-europe.azure.snowflakecomputing.com"}, DefaultValue="vo19612.west-europe.azure.snowflakecomputing.com", Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 56c6622a-f593-43e8-89b1-7f63554cceb8
+	queryGroup: Parameters
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text
+
+expression 'p_Snowflake Database Name' = "STRETCH_DEMO_DATA" meta [IsParameterQuery=true, List={"STRETCH_DEMO_DATA"}, DefaultValue="STRETCH_DEMO_DATA", Type="Text", IsParameterQueryRequired=true]
+	lineageTag: d21934a7-ccc2-4795-9ab9-4985d8f4b6cb
+	queryGroup: Parameters
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text
+
+expression 'p_Snowflake Schema Name' = "PROCUREMENT_DEMO_DATA" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 46d44789-22bc-417a-991a-d997e86f66c6
+	queryGroup: Parameters
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text
+
+expression 'p_Snowflake Table Name' = "PROCUREMENT_FACT" meta [IsParameterQuery=true, ExpressionIdentifier=#"Table Names", Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 564a92bd-4ad4-42ed-b7a9-33ea4646d4cb
+	queryGroup: Parameters
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text
+
+expression 'Table Names' =
+		let
+		    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i45WcnYMCvJ0DYp38fRVitWJVnJxDHGFcwKC/J1Dg1x9Xf1C4t0cnUNggi6hziFwRcGhAQE+yEaEOwa5eviHBkPNiQUA", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [#"Table Names" = _t]),
+		    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Table Names", type text}}),
+		    #"Table Names1" = #"Changed Type"[Table Names]
+		in
+		    #"Table Names1"
+	lineageTag: d2ccaf70-06d0-48a9-bbe9-c934ccbfacb4
+	queryGroup: Parameters
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = List
+

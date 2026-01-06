@@ -1,0 +1,56 @@
+table DEPARTMENTS
+	lineageTag: ea71c1d8-0a7b-4ade-a2b0-b816e0b5e9e9
+
+	column DepartmentID
+		dataType: double
+		lineageTag: 06595067-525f-4969-b414-e449b9501451
+		summarizeBy: none
+		sourceColumn: DepartmentID
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column DepartmentName
+		dataType: string
+		lineageTag: d8dffeee-9192-4fa4-a42a-fa811909c5c4
+		summarizeBy: none
+		sourceColumn: DepartmentName
+
+		annotation SummarizationSetBy = Automatic
+
+	column DepartmentHead
+		dataType: double
+		lineageTag: f75de01c-31b4-4151-88c1-e115fb036d3d
+		summarizeBy: none
+		sourceColumn: DepartmentHead
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Budget
+		dataType: double
+		lineageTag: ba05f567-dc4d-45e5-8a9c-054e58471d5a
+		summarizeBy: none
+		sourceColumn: Budget
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition DEPARTMENTS = m
+		mode: import
+		source =
+				let
+				    Source = Snowflake.Databases("vo19612.west-europe.azure.snowflakecomputing.com","STRETCHDEVELOPER"),
+				    STRETCH_DEMO_DATA_Database = Source{[Name="STRETCH_DEMO_DATA",Kind="Database"]}[Data],
+				    HR_DEMO_DATA_Schema = STRETCH_DEMO_DATA_Database{[Name="HR_DEMO_DATA",Kind="Schema"]}[Data],
+				    DEPARTMENTS_Table = HR_DEMO_DATA_Schema{[Name="DEPARTMENTS",Kind="Table"]}[Data]
+				in
+				    DEPARTMENTS_Table
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

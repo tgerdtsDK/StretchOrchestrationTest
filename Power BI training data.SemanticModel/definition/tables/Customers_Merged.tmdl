@@ -1,0 +1,77 @@
+table Customers_Merged
+	lineageTag: b40d9a9f-ac42-472c-8a7f-440a48a318f4
+
+	column CustomerID
+		dataType: string
+		isKey
+		lineageTag: c13a89ae-689b-4dfa-9be1-d192bf93c7c4
+		summarizeBy: none
+		sourceColumn: CustomerID
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerCVR
+		dataType: int64
+		formatString: 0
+		lineageTag: 72671ec0-9bcf-4cbe-99c6-eaac34d046d8
+		summarizeBy: none
+		sourceColumn: CustomerCVR
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerName
+		dataType: string
+		lineageTag: 4a3d6be1-7839-4314-b1da-9214b207c971
+		isDefaultLabel
+		summarizeBy: none
+		sourceColumn: CustomerName
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerCategory
+		dataType: string
+		lineageTag: 6853562a-e57e-43a9-861a-e9cf26aa2a2b
+		summarizeBy: none
+		sourceColumn: CustomerCategory
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerSegment
+		dataType: string
+		lineageTag: 1a4747d4-3ff3-4649-be98-0339bd58fe0d
+		summarizeBy: none
+		sourceColumn: CustomerSegment
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerCountry
+		dataType: string
+		lineageTag: c03d9b3d-2253-46a1-b237-7a0a81ebb02c
+		dataCategory: Country
+		summarizeBy: none
+		sourceColumn: CustomerCountry
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerRegion
+		dataType: string
+		lineageTag: c86e4e67-999b-4aec-8d5b-e04b12ed98a6
+		summarizeBy: none
+		sourceColumn: CustomerRegion
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Customers_Merged = m
+		mode: import
+		queryGroup: 'Transformed data'
+		source =
+				let
+				    Source = Table.NestedJoin(Customers_Cleaned, {"CustomerCountry"}, CountryDimRegions_Cleaned, {"CustomerCountry"}, "CountryDimRegions_Cleaned", JoinKind.LeftOuter),
+				    #"Expanded CountryDimRegions_Cleaned" = Table.ExpandTableColumn(Source, "CountryDimRegions_Cleaned", {"CustomerRegion"}, {"CustomerRegion"})
+				in
+				    #"Expanded CountryDimRegions_Cleaned"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

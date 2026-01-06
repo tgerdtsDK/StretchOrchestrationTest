@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "HR data"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "5b30c25e-6a87-bba3-4873-a38076c33956"
+  }
+}

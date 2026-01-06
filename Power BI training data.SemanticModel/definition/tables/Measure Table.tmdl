@@ -1,0 +1,61 @@
+table 'Measure Table'
+	lineageTag: 70a5be61-2de6-4c48-87c8-119db3e42af7
+
+	measure 'Total NetSales' = SUM(Fact_Cleaned[NetSales])
+		formatString: #,0
+		displayFolder: Totals\Net
+		lineageTag: 2ae241ac-2c1b-47e9-bad5-c848a7b90779
+
+	measure 'Total GrossSales' = SUM(Fact_Cleaned[GrossSales])
+		formatString: #,0
+		displayFolder: Totals\Gross
+		lineageTag: 18338685-6a64-4d46-8902-12b24e893791
+
+	measure 'Total NetProfit' = SUM(Fact_Cleaned[NetProfit])
+		formatString: #,0
+		displayFolder: Totals\Net
+		lineageTag: da9e4e3d-e238-4fbe-98e5-b4933ba0888c
+
+	measure 'Total GrossProfit' = SUM(Fact_Cleaned[GrossProfit])
+		formatString: #,0
+		displayFolder: Totals\Gross
+		lineageTag: 6236ef4a-735d-4da0-a209-2643e048dd06
+
+	measure 'Total Products' = DISTINCTCOUNT(Products_Cleaned[ProductID])
+		formatString: #,0
+		displayFolder: Totals
+		lineageTag: 0b0ed597-ae5f-4b98-a9c0-3dd9c5309a54
+
+	measure 'Avg NetSalesTarget' = AVERAGE(Fact_Cleaned[NetSalesTarget])
+		formatString: #,0.00
+		displayFolder: Avg
+		lineageTag: b3d9b4dc-8259-4ec5-8035-24897f76800e
+
+	measure 'Total GrossProfit SamePeriodLastYear' = CALCULATE(SUM(Fact_Cleaned[GrossProfit]),SAMEPERIODLASTYEAR(DATESYTD('Date'[Date])))
+		formatString: #,0
+		displayFolder: Totals\Gross
+		lineageTag: 22fbc3ce-b37f-4bae-9ac2-876eb968d5b4
+
+	measure 'Total GrossProfit TotalYTD' = TOTALYTD(SUM(Fact_Cleaned[GrossProfit]),'Date'[Date])
+		formatString: #,0
+		displayFolder: Totals\Gross
+		lineageTag: 525e0e56-1812-4748-8135-c7ff28b96b94
+
+	measure 'Total GrossProfit LY (DateAdd)' = CALCULATE([Total GrossProfit TotalYTD],DATEADD('Date'[Date],-1,YEAR))
+		formatString: #,0
+		displayFolder: Totals\Gross
+		lineageTag: 5a36a108-af59-4354-a397-3083f0a3d9b4
+
+	partition 'Measure Table' = m
+		mode: import
+		queryGroup: 'Measure table (do not delete)'
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Column1 = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Column1", type text}}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Changed Type",{"Column1"})
+				in
+				    #"Removed Columns"
+
+	annotation PBI_ResultType = Table
+

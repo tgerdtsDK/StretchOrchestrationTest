@@ -1,0 +1,284 @@
+expression EmployeeInfo_Cleaned =
+		let
+		    Source = Excel.Workbook(Web.Contents("https://stretch2se.sharepoint.com/sites/QonnectWayWeWork/Shared%20Documents/MS%20Fabric/Power%20BI%20Intro%20-%20Lunch%20and%20Learn%20May%202025/AllTables.xlsx"), null, true),
+		    EmployeeInfo_Sheet = Source{[Item="EmployeeInfo",Kind="Sheet"]}[Data],
+		    #"Promoted Headers" = Table.PromoteHeaders(EmployeeInfo_Sheet, [PromoteAllScalars=true]),
+		    #"Grouped Rows" = Table.Group(#"Promoted Headers", {"EmployeeID"}, {{"MaxEmployeeTenure", each List.Max([EmployeeTenure]), type nullable number}, {"MaxEmployeeAge", each List.Max([EmployeeAge]), type nullable number}}),
+		    #"Sorted Rows" = Table.Sort(#"Grouped Rows",{{"EmployeeID", Order.Ascending}}),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Sorted Rows",{{"EmployeeID", type text}, {"MaxEmployeeTenure", Int64.Type}, {"MaxEmployeeAge", Int64.Type}})
+		in
+		    #"Changed Type"
+	lineageTag: 060b8f91-a9a8-4882-980c-e5ee1edbd38a
+	queryGroup: 'Transformed data'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression Employees_Cleaned =
+		let
+		    Source = Excel.Workbook(Web.Contents("https://stretch2se.sharepoint.com/sites/QonnectWayWeWork/Shared%20Documents/MS%20Fabric/Power%20BI%20Intro%20-%20Lunch%20and%20Learn%20May%202025/AllTables.xlsx"), null, true),
+		    Employees_Sheet = Source{[Item="Employees",Kind="Sheet"]}[Data],
+		    #"Promoted Headers" = Table.PromoteHeaders(Employees_Sheet, [PromoteAllScalars=true]),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"EmployeeID", type text}, {"EmployeeName", type text}, {"ManagerId", type text}, {"ManagerName", type text}, {"HierarchyLevel", Int64.Type}, {"EmpRole", type text}, {"Department", type text}, {"DepartmentId", Int64.Type}}),
+		    #"Filtered Rows" = Table.SelectRows(#"Changed Type", each ([HierarchyLevel] = 0)),
+		    #"Sorted Rows" = Table.Sort(#"Filtered Rows",{{"EmployeeID", Order.Ascending}})
+		in
+		    #"Sorted Rows"
+	lineageTag: 5e8d209f-0569-4b06-bbc6-509c49bd4831
+	queryGroup: 'Transformed data'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression CountryDimRegions_Cleaned =
+		let
+		    Source = Excel.Workbook(Web.Contents("https://stretch2se.sharepoint.com/sites/QonnectWayWeWork/Shared%20Documents/MS%20Fabric/Power%20BI%20Intro%20-%20Lunch%20and%20Learn%20May%202025/AllTables.xlsx"), null, true),
+		    CountryDimRegions_Sheet = Source{[Item="CountryDimRegions",Kind="Sheet"]}[Data],
+		    #"Promoted Headers" = Table.PromoteHeaders(CountryDimRegions_Sheet, [PromoteAllScalars=true]),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"CustomerRegion", type text}, {"CustomerCountry", type text}}),
+		    #"Removed Duplicates" = Table.Distinct(#"Changed Type"),
+		    #"Sorted Rows" = Table.Sort(#"Removed Duplicates",{{"CustomerRegion", Order.Ascending}, {"CustomerCountry", Order.Ascending}})
+		in
+		    #"Sorted Rows"
+	lineageTag: c8b8476d-75a6-4e58-808b-b99052f45461
+	queryGroup: 'Transformed data'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression Customers_Cleaned =
+		let
+		    Source = Excel.Workbook(Web.Contents("https://stretch2se.sharepoint.com/sites/QonnectWayWeWork/Shared%20Documents/MS%20Fabric/Power%20BI%20Intro%20-%20Lunch%20and%20Learn%20May%202025/AllTables.xlsx"), null, true),
+		    Customers_Sheet = Source{[Item="Customers",Kind="Sheet"]}[Data],
+		    #"Promoted Headers" = Table.PromoteHeaders(Customers_Sheet, [PromoteAllScalars=true]),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"CustomerID", type text}, {"CustomerCVR", Int64.Type}, {"CustomerName", type text}, {"CustomerCategory", type text}, {"CustomerSegment", type text}, {"test", type text}, {"CustomerCountry", type text}}),
+		    #"Removed Columns" = Table.RemoveColumns(#"Changed Type",{"test"})
+		in
+		    #"Removed Columns"
+	lineageTag: 93c54fec-0974-4b1f-8573-fd7226a8e720
+	queryGroup: 'Transformed data'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression ShippingCalendar_Cleaned =
+		let
+		    Source = Excel.Workbook(Web.Contents("https://stretch2se.sharepoint.com/sites/QonnectWayWeWork/Shared%20Documents/MS%20Fabric/Power%20BI%20Intro%20-%20Lunch%20and%20Learn%20May%202025/AllTables.xlsx"), null, true),
+		    Shipping_Calendar_Sheet = Source{[Item="Shipping_Calendar",Kind="Sheet"]}[Data],
+		    #"Promoted Headers" = Table.PromoteHeaders(Shipping_Calendar_Sheet, [PromoteAllScalars=true]),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"ShippingDateKey", Int64.Type}, {"ShippingRangeKey", type date}, {"ShippingDate", type date}, {"ShippingDateName", type text}, {"ShippingDateNum", Int64.Type}, {"ShippingWeek", Int64.Type}, {"ShippingYear", Int64.Type}, {"ShippingMonth", Int64.Type}, {"ShippingMonthName", type text}, {"ShippingYearMonth", Int64.Type}, {"ShippingYearMonthName", type any}, {"ShippingRollingYearMonthName", Int64.Type}, {"ShippingDay", Int64.Type}, {"ShippingQuarter", type text}, {"ShippingWeekYear", type any}, {"ShippingWeekDay", type text}, {"ShippingTodayFlag", Int64.Type}, {"ShippingYesterdayFlag", Int64.Type}, {"ShippingTomorrowFlag", Int64.Type}, {"ShippingCurrentMonthFlag", Int64.Type}, {"ShippingLastMonthFlag", Int64.Type}, {"ShippingNextMonthFlag", Int64.Type}, {"ShippingCurrentYearFlag", Int64.Type}, {"ShippingLastYearFlag", Int64.Type}, {"ShippingNextYearFlag", Int64.Type}, {"ShippingRolling12MonthsFlag", Int64.Type}, {"ShippingRolling9MonthsFlag", Int64.Type}, {"ShippingRolling6MonthsFlag", Int64.Type}, {"ShippingRolling3MonthsFlag", Int64.Type}, {"ShippingRolling2MonthsFlag", Int64.Type}, {"ShippingRollingMonthFlag", Int64.Type}, {"ShippingMTDFlag", Int64.Type}, {"ShippingYTDFlag", Int64.Type}, {"ShippingLastYearMTDFlag", Int64.Type}, {"ShippingLastYearYTDFlag", Int64.Type}, {"ShippingQuarterToDateFlag", Int64.Type}, {"ShippingLastQuarterToDateFlag", Int64.Type}, {"ShippingCurrentQuarterFlag", Int64.Type}, {"ShippingLastQuarterFlag", Int64.Type}}),
+		    #"Lowercased Text" = Table.TransformColumns(#"Changed Type",{{"ShippingDateName", Text.Lower, type text}}),
+		    #"Renamed Columns" = Table.RenameColumns(#"Lowercased Text",{{"ShippingDateName", "ShippingDateNameShort"}}),
+		    #"Changed Type1" = Table.TransformColumnTypes(#"Renamed Columns",{{"ShippingWeekYear", type text}}),
+		    #"Replaced Value" = Table.ReplaceValue(#"Changed Type1","01/01/","01-",Replacer.ReplaceText,{"ShippingWeekYear"}),
+		    #"Replaced Value1" = Table.ReplaceValue(#"Replaced Value","01/02/","02-",Replacer.ReplaceText,{"ShippingWeekYear"}),
+		    #"Replaced Value2" = Table.ReplaceValue(#"Replaced Value1","01/03/","03-",Replacer.ReplaceText,{"ShippingWeekYear"}),
+		    #"Replaced Value3" = Table.ReplaceValue(#"Replaced Value2","01/04/","04-",Replacer.ReplaceText,{"ShippingWeekYear"}),
+		    #"Replaced Value4" = Table.ReplaceValue(#"Replaced Value3","01/05/","05-",Replacer.ReplaceText,{"ShippingWeekYear"}),
+		    #"Replaced Value5" = Table.ReplaceValue(#"Replaced Value4","01/06/","06-",Replacer.ReplaceText,{"ShippingWeekYear"}),
+		    #"Replaced Value6" = Table.ReplaceValue(#"Replaced Value5","01/07/","07-",Replacer.ReplaceText,{"ShippingWeekYear"}),
+		    #"Replaced Value7" = Table.ReplaceValue(#"Replaced Value6","01/08/","08-",Replacer.ReplaceText,{"ShippingWeekYear"}),
+		    #"Replaced Value8" = Table.ReplaceValue(#"Replaced Value7","01/09/","09-",Replacer.ReplaceText,{"ShippingWeekYear"}),
+		    #"Replaced Value9" = Table.ReplaceValue(#"Replaced Value8","01/10/","10-",Replacer.ReplaceText,{"ShippingWeekYear"}),
+		    #"Replaced Value10" = Table.ReplaceValue(#"Replaced Value9","01/11/","11-",Replacer.ReplaceText,{"ShippingWeekYear"}),
+		    #"Replaced Value11" = Table.ReplaceValue(#"Replaced Value10","01/12/","12-",Replacer.ReplaceText,{"ShippingWeekYear"})
+		in
+		    #"Replaced Value11"
+	lineageTag: 590a0fe7-1c69-4928-8cd5-a7d548b47c10
+	queryGroup: 'Transformed data'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression OrderCalendar_Cleaned =
+		let
+		    Source = Excel.Workbook(Web.Contents("https://stretch2se.sharepoint.com/sites/QonnectWayWeWork/Shared%20Documents/MS%20Fabric/Power%20BI%20Intro%20-%20Lunch%20and%20Learn%20May%202025/AllTables.xlsx"), null, true),
+		    Order_Calendar_Sheet = Source{[Item="Order_Calendar",Kind="Sheet"]}[Data],
+		    #"Promoted Headers" = Table.PromoteHeaders(Order_Calendar_Sheet, [PromoteAllScalars=true]),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"OrderDateKey", Int64.Type}, {"OrderRangeKey", type date}, {"OrderDate", type date}, {"OrderDateName", type text}, {"OrderDateNum", Int64.Type}, {"OrderWeek", Int64.Type}, {"OrderYear", Int64.Type}, {"OrderMonth", Int64.Type}, {"OrderMonthName", type text}, {"OrderYearMonth", Int64.Type}, {"OrderYearMonthName", type any}, {"OrderRollingYearMonthName", Int64.Type}, {"OrderDay", Int64.Type}, {"OrderQuarter", type text}, {"OrderWeekYear", type any}, {"OrderWeekDay", type text}, {"OrderTodayFlag", Int64.Type}, {"OrderYesterdayFlag", Int64.Type}, {"OrderTomorrowFlag", Int64.Type}, {"OrderCurrentMonthFlag", Int64.Type}, {"OrderLastMonthFlag", Int64.Type}, {"OrderNextMonthFlag", Int64.Type}, {"OrderCurrentYearFlag", Int64.Type}, {"OrderLastYearFlag", Int64.Type}, {"OrderNextYearFlag", Int64.Type}, {"OrderRolling12MonthsFlag", Int64.Type}, {"OrderRolling9MonthsFlag", Int64.Type}, {"OrderRolling6MonthsFlag", Int64.Type}, {"OrderRolling3MonthsFlag", Int64.Type}, {"OrderRolling2MonthsFlag", Int64.Type}, {"OrderRollingMonthFlag", Int64.Type}, {"OrderMTDFlag", Int64.Type}, {"OrderYTDFlag", Int64.Type}, {"OrderLastYearMTDFlag", Int64.Type}, {"OrderLastYearYTDFlag", Int64.Type}, {"OrderQuarterToDateFlag", Int64.Type}, {"OrderLastQuarterToDateFlag", Int64.Type}, {"OrderCurrentQuarterFlag", Int64.Type}, {"OrderLastQuarterFlag", Int64.Type}}),
+		    #"Lowercased Text" = Table.TransformColumns(#"Changed Type",{{"OrderDateName", Text.Lower, type text}}),
+		    #"Renamed Columns" = Table.RenameColumns(#"Lowercased Text",{{"OrderDateName", "OrderDateNameShort"}}),
+		    #"Changed Type1" = Table.TransformColumnTypes(#"Renamed Columns",{{"OrderWeekYear", type text}}),
+		    #"Replaced Value" = Table.ReplaceValue(#"Changed Type1","01/01/","01-",Replacer.ReplaceText,{"OrderWeekYear"}),
+		    #"Replaced Value1" = Table.ReplaceValue(#"Replaced Value","01/02/","02-",Replacer.ReplaceText,{"OrderWeekYear"}),
+		    #"Replaced Value2" = Table.ReplaceValue(#"Replaced Value1","01/03/","03-",Replacer.ReplaceText,{"OrderWeekYear"}),
+		    #"Replaced Value3" = Table.ReplaceValue(#"Replaced Value2","01/04/","04-",Replacer.ReplaceText,{"OrderWeekYear"}),
+		    #"Replaced Value4" = Table.ReplaceValue(#"Replaced Value3","01/05/","05-",Replacer.ReplaceText,{"OrderWeekYear"}),
+		    #"Replaced Value5" = Table.ReplaceValue(#"Replaced Value4","01/06/","06-",Replacer.ReplaceText,{"OrderWeekYear"}),
+		    #"Replaced Value6" = Table.ReplaceValue(#"Replaced Value5","01/07/","07-",Replacer.ReplaceText,{"OrderWeekYear"}),
+		    #"Replaced Value7" = Table.ReplaceValue(#"Replaced Value6","01/08/","08-",Replacer.ReplaceText,{"OrderWeekYear"}),
+		    #"Replaced Value8" = Table.ReplaceValue(#"Replaced Value7","01/09/","09-",Replacer.ReplaceText,{"OrderWeekYear"}),
+		    #"Replaced Value9" = Table.ReplaceValue(#"Replaced Value8","01/10/","10-",Replacer.ReplaceText,{"OrderWeekYear"}),
+		    #"Replaced Value10" = Table.ReplaceValue(#"Replaced Value9","01/11/","11-",Replacer.ReplaceText,{"OrderWeekYear"}),
+		    #"Replaced Value11" = Table.ReplaceValue(#"Replaced Value10","01/12/","12-",Replacer.ReplaceText,{"OrderWeekYear"})
+		in
+		    #"Replaced Value11"
+	lineageTag: 15a82f81-43e9-45a8-854c-d2276d1eec10
+	queryGroup: 'Transformed data'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression CountryDimRegions =
+		let
+		    Source = Excel.Workbook(Web.Contents("https://stretch2se.sharepoint.com/sites/QonnectWayWeWork/Shared%20Documents/MS%20Fabric/Power%20BI%20Intro%20-%20Lunch%20and%20Learn%20May%202025/AllTables.xlsx"), null, true),
+		    CountryDimRegions_Sheet = Source{[Item="CountryDimRegions",Kind="Sheet"]}[Data],
+		    #"Changed Type" = Table.TransformColumnTypes(CountryDimRegions_Sheet,{{"Column1", type text}, {"Column2", type text}})
+		in
+		    #"Changed Type"
+	lineageTag: ed527d9e-bb16-4633-93fd-1bf26ec0ac3e
+	queryGroup: 'Raw data'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression Customers =
+		let
+		    Source = Excel.Workbook(Web.Contents("https://stretch2se.sharepoint.com/sites/QonnectWayWeWork/Shared%20Documents/MS%20Fabric/Power%20BI%20Intro%20-%20Lunch%20and%20Learn%20May%202025/AllTables.xlsx"), null, true),
+		    Customers_Sheet = Source{[Item="Customers",Kind="Sheet"]}[Data],
+		    #"Promoted Headers" = Table.PromoteHeaders(Customers_Sheet, [PromoteAllScalars=true]),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"CustomerID", type text}, {"CustomerCVR", Int64.Type}, {"CustomerName", type text}, {"CustomerCategory", type text}, {"CustomerSegment", type text}, {"test", type text}, {"CustomerCountry", type text}})
+		in
+		    #"Changed Type"
+	lineageTag: d16daa15-079e-44bd-ab9b-1f4b96a74456
+	queryGroup: 'Raw data'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression Products =
+		let
+		    Source = Excel.Workbook(Web.Contents("https://stretch2se.sharepoint.com/sites/QonnectWayWeWork/Shared%20Documents/MS%20Fabric/Power%20BI%20Intro%20-%20Lunch%20and%20Learn%20May%202025/AllTables.xlsx"), null, true),
+		    Products_Sheet = Source{[Item="Products",Kind="Sheet"]}[Data],
+		    #"Promoted Headers" = Table.PromoteHeaders(Products_Sheet, [PromoteAllScalars=true]),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"ProductName", type text}, {"ProductID", type text}, {"ProductBrand", type text}, {"ProductCategory", type text}, {"ProductType", type text}, {"ProductModel", type text}, {"ProductCost", Int64.Type}, {"ProductPriceYear", Int64.Type}, {"ProductIDYear_Key", type text}, {"ProductListPrice", Int64.Type}})
+		in
+		    #"Changed Type"
+	lineageTag: bc98811d-ad50-45a4-8583-06c2665d3335
+	queryGroup: 'Raw data'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression Order_Calendar =
+		let
+		    Source = Excel.Workbook(Web.Contents("https://stretch2se.sharepoint.com/sites/QonnectWayWeWork/Shared%20Documents/MS%20Fabric/Power%20BI%20Intro%20-%20Lunch%20and%20Learn%20May%202025/AllTables.xlsx"), null, true),
+		    Order_Calendar_Sheet = Source{[Item="Order_Calendar",Kind="Sheet"]}[Data],
+		    #"Promoted Headers" = Table.PromoteHeaders(Order_Calendar_Sheet, [PromoteAllScalars=true]),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"OrderDateKey", Int64.Type}, {"OrderRangeKey", type date}, {"OrderDate", type date}, {"OrderDateName", type text}, {"OrderDateNum", Int64.Type}, {"OrderWeek", Int64.Type}, {"OrderYear", Int64.Type}, {"OrderMonth", Int64.Type}, {"OrderMonthName", type text}, {"OrderYearMonth", Int64.Type}, {"OrderYearMonthName", type any}, {"OrderRollingYearMonthName", Int64.Type}, {"OrderDay", Int64.Type}, {"OrderQuarter", type text}, {"OrderWeekYear", type any}, {"OrderWeekDay", type text}, {"OrderTodayFlag", Int64.Type}, {"OrderYesterdayFlag", Int64.Type}, {"OrderTomorrowFlag", Int64.Type}, {"OrderCurrentMonthFlag", Int64.Type}, {"OrderLastMonthFlag", Int64.Type}, {"OrderNextMonthFlag", Int64.Type}, {"OrderCurrentYearFlag", Int64.Type}, {"OrderLastYearFlag", Int64.Type}, {"OrderNextYearFlag", Int64.Type}, {"OrderRolling12MonthsFlag", Int64.Type}, {"OrderRolling9MonthsFlag", Int64.Type}, {"OrderRolling6MonthsFlag", Int64.Type}, {"OrderRolling3MonthsFlag", Int64.Type}, {"OrderRolling2MonthsFlag", Int64.Type}, {"OrderRollingMonthFlag", Int64.Type}, {"OrderMTDFlag", Int64.Type}, {"OrderYTDFlag", Int64.Type}, {"OrderLastYearMTDFlag", Int64.Type}, {"OrderLastYearYTDFlag", Int64.Type}, {"OrderQuarterToDateFlag", Int64.Type}, {"OrderLastQuarterToDateFlag", Int64.Type}, {"OrderCurrentQuarterFlag", Int64.Type}, {"OrderLastQuarterFlag", Int64.Type}})
+		in
+		    #"Changed Type"
+	lineageTag: b8d1e6dd-507d-4027-bcd1-67bef950bc80
+	queryGroup: 'Raw data'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression Shipping_Calendar =
+		let
+		    Source = Excel.Workbook(Web.Contents("https://stretch2se.sharepoint.com/sites/QonnectWayWeWork/Shared%20Documents/MS%20Fabric/Power%20BI%20Intro%20-%20Lunch%20and%20Learn%20May%202025/AllTables.xlsx"), null, true),
+		    Shipping_Calendar_Sheet = Source{[Item="Shipping_Calendar",Kind="Sheet"]}[Data],
+		    #"Promoted Headers" = Table.PromoteHeaders(Shipping_Calendar_Sheet, [PromoteAllScalars=true]),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"ShippingDateKey", Int64.Type}, {"ShippingRangeKey", type date}, {"ShippingDate", type date}, {"ShippingDateName", type text}, {"ShippingDateNum", Int64.Type}, {"ShippingWeek", Int64.Type}, {"ShippingYear", Int64.Type}, {"ShippingMonth", Int64.Type}, {"ShippingMonthName", type text}, {"ShippingYearMonth", Int64.Type}, {"ShippingYearMonthName", type any}, {"ShippingRollingYearMonthName", Int64.Type}, {"ShippingDay", Int64.Type}, {"ShippingQuarter", type text}, {"ShippingWeekYear", type any}, {"ShippingWeekDay", type text}, {"ShippingTodayFlag", Int64.Type}, {"ShippingYesterdayFlag", Int64.Type}, {"ShippingTomorrowFlag", Int64.Type}, {"ShippingCurrentMonthFlag", Int64.Type}, {"ShippingLastMonthFlag", Int64.Type}, {"ShippingNextMonthFlag", Int64.Type}, {"ShippingCurrentYearFlag", Int64.Type}, {"ShippingLastYearFlag", Int64.Type}, {"ShippingNextYearFlag", Int64.Type}, {"ShippingRolling12MonthsFlag", Int64.Type}, {"ShippingRolling9MonthsFlag", Int64.Type}, {"ShippingRolling6MonthsFlag", Int64.Type}, {"ShippingRolling3MonthsFlag", Int64.Type}, {"ShippingRolling2MonthsFlag", Int64.Type}, {"ShippingRollingMonthFlag", Int64.Type}, {"ShippingMTDFlag", Int64.Type}, {"ShippingYTDFlag", Int64.Type}, {"ShippingLastYearMTDFlag", Int64.Type}, {"ShippingLastYearYTDFlag", Int64.Type}, {"ShippingQuarterToDateFlag", Int64.Type}, {"ShippingLastQuarterToDateFlag", Int64.Type}, {"ShippingCurrentQuarterFlag", Int64.Type}, {"ShippingLastQuarterFlag", Int64.Type}})
+		in
+		    #"Changed Type"
+	lineageTag: 164621b5-ec99-4905-b22e-f6911ec5781e
+	queryGroup: 'Raw data'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression EmployeeInfo =
+		let
+		    Source = Excel.Workbook(Web.Contents("https://stretch2se.sharepoint.com/sites/QonnectWayWeWork/Shared%20Documents/MS%20Fabric/Power%20BI%20Intro%20-%20Lunch%20and%20Learn%20May%202025/AllTables.xlsx"), null, true),
+		    EmployeeInfo_Sheet = Source{[Item="EmployeeInfo",Kind="Sheet"]}[Data],
+		    #"Promoted Headers" = Table.PromoteHeaders(EmployeeInfo_Sheet, [PromoteAllScalars=true]),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"EmployeeID", type text}, {"EmployeeTenure", Int64.Type}, {"EmployeeAge", Int64.Type}})
+		in
+		    #"Changed Type"
+	lineageTag: ce689368-7dbf-497b-a75f-17302dc1a8d5
+	queryGroup: 'Raw data'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression Employees =
+		let
+		    Source = Excel.Workbook(Web.Contents("https://stretch2se.sharepoint.com/sites/QonnectWayWeWork/Shared%20Documents/MS%20Fabric/Power%20BI%20Intro%20-%20Lunch%20and%20Learn%20May%202025/AllTables.xlsx"), null, true),
+		    Employees_Sheet = Source{[Item="Employees",Kind="Sheet"]}[Data],
+		    #"Promoted Headers" = Table.PromoteHeaders(Employees_Sheet, [PromoteAllScalars=true]),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"EmployeeID", type text}, {"EmployeeName", type text}, {"ManagerId", type text}, {"ManagerName", type text}, {"HierarchyLevel", Int64.Type}, {"EmpRole", type text}, {"Department", type text}, {"DepartmentId", Int64.Type}})
+		in
+		    #"Changed Type"
+	lineageTag: b217ec9d-2e83-46f3-8649-b9277b237773
+	queryGroup: 'Raw data'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression Fact_Pivoted =
+		let
+		    Source = Excel.Workbook(Web.Contents("https://stretch2se.sharepoint.com/sites/QonnectWayWeWork/Shared%20Documents/MS%20Fabric/Power%20BI%20Intro%20-%20Lunch%20and%20Learn%20May%202025/AllTables.xlsx"), null, true),
+		    Fact_Sheet = Source{[Item="Fact",Kind="Sheet"]}[Data],
+		    #"Promoted Headers" = Table.PromoteHeaders(Fact_Sheet, [PromoteAllScalars=true]),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"CustomerID", type text}, {"ProductIDYear_Key", type text}, {"EmployeeID", type text}, {"ShippingDateKey", Int64.Type}, {"OrderDateKey", Int64.Type}, {"Units", Int64.Type}, {"RecordType", type text}, {"DiscountPercent", Int64.Type}, {"GrossSales", Int64.Type}, {"NetSalesExShipping", Int64.Type}, {"TargetYear", Int64.Type}, {"QtyBucket", type text}, {"LineDiscount", Int64.Type}, {"ShipperID", type text}, {"NetSales", Int64.Type}, {"NetProfit", Int64.Type}, {"GrossProfit", Int64.Type}, {"NetSalesTarget", Int64.Type}, {"NetCost", Int64.Type}, {"COGS", Int64.Type}, {"ShippingCost", Int64.Type}, {"OrderID", type text}, {"OrderLineID", type text}}),
+		    #"Pivoted Column" = Table.Pivot(Table.TransformColumnTypes(#"Changed Type", {{"TargetYear", type text}}, "en-GB"), List.Distinct(Table.TransformColumnTypes(#"Changed Type", {{"TargetYear", type text}}, "en-GB")[TargetYear]), "TargetYear", "NetSalesTarget", List.Sum)
+		in
+		    #"Pivoted Column"
+	lineageTag: 2192db5f-8913-44a0-94e2-90f4273ad038
+	queryGroup: 'Raw data'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression MessyData_Cleaned =
+		let
+		    Source = Excel.Workbook(Web.Contents("https://stretch2se.sharepoint.com/sites/QonnectWayWeWork/Shared%20Documents/MS%20Fabric/Power%20BI%20Intro%20-%20Lunch%20and%20Learn%20May%202025/AllTables.xlsx"), null, true),
+		    messy_data_Sheet = Source{[Item="messy_data",Kind="Sheet"]}[Data],
+		    #"Promoted Headers" = Table.PromoteHeaders(messy_data_Sheet, [PromoteAllScalars=true]),
+		    #"Inserted Cleaned Text" = Table.AddColumn(#"Promoted Headers", "Clean and capitalized each word", each Text.Clean([Text]), type text),
+		    #"Capitalized Each Word" = Table.TransformColumns(#"Inserted Cleaned Text",{{"Clean and capitalized each word", Text.Proper, type text}}),
+		    #"Inserted Lowercased Text" = Table.AddColumn(#"Capitalized Each Word", "Lowercase and trim", each Text.Lower([Email]), type text),
+		    #"Trimmed Text" = Table.TransformColumns(#"Inserted Lowercased Text",{{"Lowercase and trim", Text.Trim, type text}}),
+		    #"Inserted Trimmed Text" = Table.AddColumn(#"Trimmed Text", "Trim zeroes", each Text.TrimStart([CustomerID],"0"), type text),
+		    #"Inserted Trimmed Text1" = Table.AddColumn(#"Inserted Trimmed Text", "Trim spaces and zeroes", each Text.Trim([OrderMonth], {"0", " "}), type text),
+		    #"Inserted Text Length" = Table.AddColumn(#"Inserted Trimmed Text1", "OrderMonth Length", each Text.Length([OrderMonth]), Int64.Type),
+		    #"Inserted Text Length1" = Table.AddColumn(#"Inserted Text Length", "Trimmed Length", each Text.Length([Trim spaces and zeroes]), Int64.Type),
+		    #"Reordered Columns" = Table.ReorderColumns(#"Inserted Text Length1",{"CustomerID", "Trim zeroes", "OrderMonth", "OrderMonth Length", "Trim spaces and zeroes", "Trimmed Length", "Email", "Lowercase and trim", "Text", "Clean and capitalized each word"})
+		in
+		    #"Reordered Columns"
+	lineageTag: ea8a870d-1620-41f5-bced-410d7002870e
+	queryGroup: 'Transformed data'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression MessyData =
+		let
+		    Source = Excel.Workbook(Web.Contents("https://stretch2se.sharepoint.com/sites/QonnectWayWeWork/Shared%20Documents/MS%20Fabric/Power%20BI%20Intro%20-%20Lunch%20and%20Learn%20May%202025/AllTables.xlsx"), null, true),
+		    messy_data_Sheet = Source{[Item="messy_data",Kind="Sheet"]}[Data],
+		    #"Promoted Headers" = Table.PromoteHeaders(messy_data_Sheet, [PromoteAllScalars=true])
+		in
+		    #"Promoted Headers"
+	lineageTag: 152fa3f4-a5ea-400d-bf29-25bf3f00edff
+	queryGroup: 'Raw data'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

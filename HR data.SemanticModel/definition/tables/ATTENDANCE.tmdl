@@ -1,0 +1,108 @@
+table ATTENDANCE
+	lineageTag: 45214281-e236-4556-9afe-13232c368025
+
+	measure 'Total Employees' = DISTINCTCOUNT('ATTENDANCE'[EmployeeID])
+		formatString: 0
+		lineageTag: b6166932-6419-49a3-9c89-8189777b702e
+
+	measure 'Attendance Before Exit' = ```
+			
+			VAR ExitDate =
+			    MAXX(
+			        FILTER(ATTRITION, ATTRITION[EmployeeID] = SELECTEDVALUE(ATTENDANCE[EmployeeID])),
+			        ATTRITION[TerminationDate]
+			    )
+			VAR DaysPhysicallyPresentBeforeExit =
+			    CALCULATE(
+			        COUNT(ATTENDANCE[Date]),
+			        ATTENDANCE[Status] = "Present",
+			        ATTENDANCE[Date] <= ExitDate
+			    )
+			VAR TotalDaysBeforeExit =
+			    CALCULATE(
+			        COUNT(ATTENDANCE[Date]),
+			        ATTENDANCE[Date] <= ExitDate
+			    )
+			RETURN
+			IF(
+			    NOT(ISBLANK(ExitDate)),
+			    DIVIDE(DaysPhysicallyPresentBeforeExit, TotalDaysBeforeExit, 0)
+			)
+			
+			```
+		lineageTag: 37094888-9d9f-4b95-988e-b05a9297061b
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure AverageWorkHours = ```
+			AVERAGE(Attendance[WorkHours])
+			
+			```
+		lineageTag: ce13d54b-d4d7-41bd-bfde-2cd1371cb194
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column AttendanceID
+		dataType: int64
+		lineageTag: 9b1a7988-ad69-49fb-bff7-8319dc2d94a0
+		summarizeBy: count
+		sourceColumn: AttendanceID
+
+		changedProperty = DataType
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column EmployeeID
+		dataType: double
+		lineageTag: 32053911-969f-41df-ac5c-bbac0f1d520c
+		summarizeBy: none
+		sourceColumn: EmployeeID
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Date
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: f7f7aacc-112c-4306-8c2a-ccdeabad01bc
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column Status
+		dataType: string
+		lineageTag: ebf63f42-ada2-4645-b5bd-66fc1eb3108e
+		summarizeBy: none
+		sourceColumn: Status
+
+		annotation SummarizationSetBy = Automatic
+
+	column WorkHours
+		dataType: double
+		lineageTag: 5e316939-0c53-41f7-9ded-328b1842556e
+		summarizeBy: sum
+		sourceColumn: WorkHours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition ATTENDANCE = m
+		mode: import
+		source =
+				let
+				    Source = Snowflake.Databases("vo19612.west-europe.azure.snowflakecomputing.com","STRETCHDEVELOPER"),
+				    STRETCH_DEMO_DATA_Database = Source{[Name="STRETCH_DEMO_DATA",Kind="Database"]}[Data],
+				    HR_DEMO_DATA_Schema = STRETCH_DEMO_DATA_Database{[Name="HR_DEMO_DATA",Kind="Schema"]}[Data],
+				    ATTENDANCE_Table = HR_DEMO_DATA_Schema{[Name="ATTENDANCE",Kind="Table"]}[Data]
+				in
+				    ATTENDANCE_Table
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

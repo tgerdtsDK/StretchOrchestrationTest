@@ -1,0 +1,30 @@
+relationship AutoDetected_55d07c78-0ecd-46dd-8f3b-924932599640
+	fromColumn: ATTENDANCE.EmployeeID
+	toColumn: EMPLOYEES.EmployeeID
+
+relationship AutoDetected_71f3c7c0-e9d4-484a-a197-23153a652ffb
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: ATTRITION.EmployeeID
+	toColumn: EMPLOYEES.EmployeeID
+
+relationship AutoDetected_80423fa3-b11b-450d-b743-d6aa995b242b
+	fromColumn: PERFORMANCE.EmployeeID
+	toColumn: EMPLOYEES.EmployeeID
+
+relationship AutoDetected_746cdcba-bcce-42c1-ab77-970e2521be26
+	fromColumn: SALARY.EmployeeID
+	toColumn: EMPLOYEES.EmployeeID
+
+relationship AutoDetected_1f9ec99e-92a7-46cc-bcb2-f0c1b434cc76
+	fromColumn: TRAINING.EmployeeID
+	toColumn: EMPLOYEES.EmployeeID
+
+relationship AutoDetected_636a1232-e490-4c26-a186-16be5a17a935
+	fromColumn: EMPLOYEES.DepartmentID
+	toColumn: DEPARTMENTS.DepartmentID
+
+relationship 980911f5-c45c-08c3-0c8b-867dc49ed4de
+	fromColumn: ATTENDANCE.Date
+	toColumn: DateTable.Date
+

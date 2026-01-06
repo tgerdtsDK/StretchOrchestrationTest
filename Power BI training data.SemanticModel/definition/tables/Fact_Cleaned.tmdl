@@ -1,0 +1,230 @@
+table Fact_Cleaned
+	lineageTag: d9017bb6-5049-4f53-972a-055fa8b69d4e
+
+	column CustomerID
+		dataType: string
+		isHidden
+		lineageTag: 9f33e111-3014-4284-9958-ccd65bc66c77
+		summarizeBy: none
+		sourceColumn: CustomerID
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductIDYear_Key
+		dataType: string
+		isHidden
+		lineageTag: 0d72fb04-7730-4f56-b98e-af3168720e9f
+		summarizeBy: none
+		sourceColumn: ProductIDYear_Key
+
+		annotation SummarizationSetBy = Automatic
+
+	column EmployeeID
+		dataType: string
+		isHidden
+		lineageTag: e4c6d235-8c50-4288-b102-ff02dc2f907c
+		summarizeBy: none
+		sourceColumn: EmployeeID
+
+		annotation SummarizationSetBy = Automatic
+
+	column ShippingDateKey
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		lineageTag: e890c91b-ac30-4a67-8bc7-b97ef5d186e8
+		summarizeBy: none
+		sourceColumn: ShippingDateKey
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column OrderDateKey
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		lineageTag: c55d15cb-fb43-469d-ac32-0e4f93db757a
+		summarizeBy: none
+		sourceColumn: OrderDateKey
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Units
+		dataType: int64
+		formatString: 0
+		lineageTag: 87c8d037-f7f2-4448-80a7-4ea417b91659
+		summarizeBy: none
+		sourceColumn: Units
+
+		annotation SummarizationSetBy = User
+
+	column RecordType
+		dataType: string
+		lineageTag: 7ada8b4e-e8be-4b19-9e99-ebfa190e2b23
+		summarizeBy: none
+		sourceColumn: RecordType
+
+		annotation SummarizationSetBy = Automatic
+
+	column DiscountPercent
+		dataType: int64
+		formatString: 0
+		lineageTag: 62860369-e8f7-40d7-be92-fe09317f1956
+		summarizeBy: none
+		sourceColumn: DiscountPercent
+
+		annotation SummarizationSetBy = User
+
+	column GrossSales
+		dataType: int64
+		formatString: 0
+		lineageTag: 49e3585e-76bc-478d-b848-ad110d43452c
+		summarizeBy: none
+		sourceColumn: GrossSales
+
+		annotation SummarizationSetBy = User
+
+	column NetSalesExShipping
+		dataType: int64
+		formatString: 0
+		lineageTag: cad95a78-5208-4a1a-9772-d64ff04c108e
+		summarizeBy: none
+		sourceColumn: NetSalesExShipping
+
+		annotation SummarizationSetBy = User
+
+	column QtyBucket
+		dataType: string
+		lineageTag: e4e64114-2681-4e9d-85fa-c1fb53673118
+		summarizeBy: none
+		sourceColumn: QtyBucket
+
+		annotation SummarizationSetBy = Automatic
+
+	column LineDiscount
+		dataType: int64
+		formatString: 0
+		lineageTag: a5fe6f5d-1d16-48b7-85a2-a4aff36c3d73
+		summarizeBy: none
+		sourceColumn: LineDiscount
+
+		annotation SummarizationSetBy = User
+
+	column ShipperID
+		dataType: string
+		lineageTag: 7d5798ce-6f70-4d21-94c7-8e737676ee56
+		summarizeBy: none
+		sourceColumn: ShipperID
+
+		annotation SummarizationSetBy = Automatic
+
+	column NetSales
+		dataType: int64
+		formatString: 0
+		lineageTag: c6c0c8a4-0447-49f5-99a0-f2616b22c893
+		summarizeBy: none
+		sourceColumn: NetSales
+
+		annotation SummarizationSetBy = User
+
+	column NetProfit
+		dataType: int64
+		formatString: 0
+		lineageTag: 06b1f2d3-2f70-4b60-980c-7f5f9dc09530
+		summarizeBy: none
+		sourceColumn: NetProfit
+
+		annotation SummarizationSetBy = User
+
+	column GrossProfit
+		dataType: int64
+		formatString: 0
+		lineageTag: 85703455-bbdc-4a5b-a698-2c5f51df681e
+		summarizeBy: none
+		sourceColumn: GrossProfit
+
+		annotation SummarizationSetBy = User
+
+	column NetCost
+		dataType: int64
+		formatString: 0
+		lineageTag: 152d1f24-e216-4002-9410-b8a68b3e525d
+		summarizeBy: none
+		sourceColumn: NetCost
+
+		annotation SummarizationSetBy = User
+
+	column COGS
+		dataType: int64
+		formatString: 0
+		lineageTag: c099bcbb-916e-42fc-964b-a5bac6f615ef
+		summarizeBy: none
+		sourceColumn: COGS
+
+		annotation SummarizationSetBy = User
+
+	column ShippingCost
+		dataType: int64
+		formatString: 0
+		lineageTag: 87dde68d-aed5-4d33-b92a-9f193e754dd2
+		summarizeBy: none
+		sourceColumn: ShippingCost
+
+		annotation SummarizationSetBy = User
+
+	column OrderID
+		dataType: string
+		lineageTag: d693a273-e1a2-4f94-a8ea-964d8907b51d
+		summarizeBy: none
+		sourceColumn: OrderID
+
+		annotation SummarizationSetBy = Automatic
+
+	column OrderLineID
+		dataType: string
+		lineageTag: af4406f6-4b29-4097-8836-6d4dd2b44381
+		isDefaultLabel
+		summarizeBy: none
+		sourceColumn: OrderLineID
+
+		annotation SummarizationSetBy = Automatic
+
+	column TargetYear
+		dataType: string
+		lineageTag: d784d728-35a5-4d3e-847d-3ecea4678c56
+		summarizeBy: none
+		sourceColumn: TargetYear
+
+		annotation SummarizationSetBy = Automatic
+
+	column NetSalesTarget
+		dataType: int64
+		formatString: 0
+		lineageTag: cefb614e-339c-4845-8ada-b0a748a3c2c0
+		summarizeBy: none
+		sourceColumn: NetSalesTarget
+
+		annotation SummarizationSetBy = User
+
+	partition Fact_Cleaned = m
+		mode: import
+		queryGroup: 'Transformed data'
+		source =
+				let
+				    Source = Excel.Workbook(Web.Contents("https://stretch2se.sharepoint.com/sites/QonnectWayWeWork/Shared%20Documents/MS%20Fabric/Power%20BI%20Intro%20-%20Lunch%20and%20Learn%20May%202025/AllTables.xlsx"), null, true),
+				    Fact_Sheet = Source{[Item="Fact",Kind="Sheet"]}[Data],
+				    #"Promoted Headers" = Table.PromoteHeaders(Fact_Sheet, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"CustomerID", type text}, {"ProductIDYear_Key", type text}, {"EmployeeID", type text}, {"ShippingDateKey", type date}, {"OrderDateKey", type date}, {"Units", Int64.Type}, {"RecordType", type text}, {"DiscountPercent", Int64.Type}, {"GrossSales", Int64.Type}, {"NetSalesExShipping", Int64.Type}, {"TargetYear", Int64.Type}, {"QtyBucket", type text}, {"LineDiscount", Int64.Type}, {"ShipperID", type text}, {"NetSales", Int64.Type}, {"NetProfit", Int64.Type}, {"GrossProfit", Int64.Type}, {"NetSalesTarget", Int64.Type}, {"NetCost", Int64.Type}, {"COGS", Int64.Type}, {"ShippingCost", Int64.Type}, {"OrderID", type text}, {"OrderLineID", type text}}),
+				    #"Pivoted Column" = Table.Pivot(Table.TransformColumnTypes(#"Changed Type", {{"TargetYear", type text}}, "en-GB"), List.Distinct(Table.TransformColumnTypes(#"Changed Type", {{"TargetYear", type text}}, "en-GB")[TargetYear]), "TargetYear", "NetSalesTarget", List.Sum),
+				    #"Unpivoted Other Columns" = Table.UnpivotOtherColumns(#"Pivoted Column", {"CustomerID", "ProductIDYear_Key", "EmployeeID", "ShippingDateKey", "OrderDateKey", "Units", "RecordType", "DiscountPercent", "GrossSales", "NetSalesExShipping", "QtyBucket", "LineDiscount", "ShipperID", "NetSales", "NetProfit", "GrossProfit", "NetCost", "COGS", "ShippingCost", "OrderID", "OrderLineID"}, "Attribute", "Value"),
+				    #"Renamed Columns" = Table.RenameColumns(#"Unpivoted Other Columns",{{"Attribute", "TargetYear"}, {"Value", "NetSalesTarget"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

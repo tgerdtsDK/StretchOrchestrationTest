@@ -1,0 +1,105 @@
+table Employees_Merged
+	lineageTag: 494dba0e-ed23-4e39-ab1c-f4aa8b838874
+
+	column EmployeeID
+		dataType: string
+		isKey
+		lineageTag: eda430d8-6ae2-4c5c-b7e7-d30aa3d4ba24
+		summarizeBy: none
+		sourceColumn: EmployeeID
+
+		annotation SummarizationSetBy = Automatic
+
+	column EmployeeName
+		dataType: string
+		lineageTag: 14a54d44-6005-411b-9589-a80fc1fd1803
+		isDefaultLabel
+		summarizeBy: none
+		sourceColumn: EmployeeName
+
+		annotation SummarizationSetBy = Automatic
+
+	column ManagerId
+		dataType: string
+		lineageTag: dfbab036-f1f5-4d38-b2ec-42fb8d047f79
+		summarizeBy: none
+		sourceColumn: ManagerId
+
+		annotation SummarizationSetBy = Automatic
+
+	column ManagerName
+		dataType: string
+		lineageTag: b8df8b87-46ca-462a-919f-17808d630022
+		summarizeBy: none
+		sourceColumn: ManagerName
+
+		annotation SummarizationSetBy = Automatic
+
+	column HierarchyLevel
+		dataType: int64
+		formatString: 0
+		lineageTag: 4488c62b-dcd4-4ccb-a7c9-839755bcdc7f
+		summarizeBy: none
+		sourceColumn: HierarchyLevel
+
+		annotation SummarizationSetBy = Automatic
+
+	column EmpRole
+		dataType: string
+		lineageTag: bf1d0197-e55c-493d-8fa4-e7a1364b0208
+		summarizeBy: none
+		sourceColumn: EmpRole
+
+		annotation SummarizationSetBy = Automatic
+
+	column Department
+		dataType: string
+		lineageTag: 7e1d90f4-8c60-44d7-9295-720c7c243e53
+		summarizeBy: none
+		sourceColumn: Department
+
+		annotation SummarizationSetBy = Automatic
+
+	column DepartmentId
+		dataType: int64
+		formatString: 0
+		lineageTag: 0972aa6f-bab9-43e5-98ce-e1503dd8fd31
+		summarizeBy: none
+		sourceColumn: DepartmentId
+
+		annotation SummarizationSetBy = Automatic
+
+	column MaxEmployeeTenure
+		dataType: int64
+		lineageTag: 42240283-0601-4342-b790-7d0aa32cabf0
+		summarizeBy: none
+		sourceColumn: MaxEmployeeTenure
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column MaxEmployeeAge
+		dataType: int64
+		lineageTag: fd47e9c0-623a-4f06-b6e5-4492f3fe1e25
+		summarizeBy: none
+		sourceColumn: MaxEmployeeAge
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition Employees_Merged = m
+		mode: import
+		queryGroup: 'Transformed data'
+		source =
+				let
+				    Source = Table.NestedJoin(Employees_Cleaned, {"EmployeeID"}, EmployeeInfo_Cleaned, {"EmployeeID"}, "EmployeeInfo_Clean", JoinKind.FullOuter),
+				    #"Expanded EmployeeInfo_Clean" = Table.ExpandTableColumn(Source, "EmployeeInfo_Clean", {"MaxEmployeeTenure", "MaxEmployeeAge"}, {"MaxEmployeeTenure", "MaxEmployeeAge"})
+				in
+				    #"Expanded EmployeeInfo_Clean"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

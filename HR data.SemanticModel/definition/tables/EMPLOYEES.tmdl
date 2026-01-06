@@ -1,0 +1,342 @@
+table EMPLOYEES
+	lineageTag: ab8534ed-eb4c-4523-9079-fd822db5e32e
+
+	measure 'New Hires' = ```
+			
+			IF(
+			    ISFILTERED('DateTable'[Year]),
+			    CALCULATE(
+			        DISTINCTCOUNT(Employees[EmployeeID]),
+			        YEAR(Employees[HireDate]) = MAX('DateTable'[Year])
+			    ),
+			    CALCULATE(
+			        DISTINCTCOUNT(Employees[EmployeeID])
+			    )
+			)
+			
+			```
+		formatString: 0
+		lineageTag: 08de352e-01f7-4e72-bf5a-04171b521d7f
+
+	measure 'Total Managers in Year' = ```
+			
+			VAR SelectedYear = SELECTEDVALUE('DateTable'[Year], YEAR(TODAY()))  -- Default to current year if none selected
+			RETURN 
+			CALCULATE(
+			    COUNTROWS('Employees'),
+			    'Employees'[JobTitle] = "Manager",
+			    'Employees'[HireDate] <= DATE(SelectedYear, 12, 31), 
+			    NOT (
+			        'Attrition'[TerminationDate] < DATE(SelectedYear, 1, 1) && NOT ISBLANK('Attrition'[TerminationDate])
+			    )
+			)
+			
+			```
+		formatString: 0
+		lineageTag: e3ea1720-b852-47e8-aeed-235f5c79012c
+
+	measure 'Average Tenure' = ```
+			
+			CALCULATE(
+			    AVERAGE(Employees[Tenure]),
+			    FILTER(
+			        Employees,
+			        Employees[EmployeeID] IN VALUES(Attendance[EmployeeID])
+			    ),
+			    VALUES('DateTable'[Year])
+			)
+			
+			```
+		lineageTag: 901f4e37-f47a-4b5e-b22f-a3b8ef2a4a32
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Average Age' = ```
+			
+			VAR SelectedYear = COALESCE(SELECTEDVALUE('DateTable'[Year]), MAX('DateTable'[Year]))
+			RETURN 
+			AVERAGEX(
+			    Employees,
+			    DATEDIFF(Employees[DateOfBirth], DATE(SelectedYear, 12, 31), YEAR)
+			)
+			
+			
+			```
+		lineageTag: 9cfb4f8b-eea7-4f41-972a-02c7124461b1
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Males = ```
+			
+			CALCULATE(
+			    DISTINCTCOUNT(ATTENDANCE[EmployeeID]), 
+			    EMPLOYEES[Gender] = "M"
+			)
+			
+			
+			```
+		formatString: 0
+		lineageTag: d880db41-23b1-4e6e-9601-8d0780f7f4cb
+
+	measure Females = ```
+			
+			CALCULATE(
+			    DISTINCTCOUNT(ATTENDANCE[EmployeeID]), 
+			    EMPLOYEES[Gender] = "F"
+			)
+			
+			
+			```
+		formatString: 0
+		lineageTag: 50649c99-a62a-436a-b500-c32690260646
+
+	measure 'Males %' = ```
+			DIVIDE([Males], ATTENDANCE[Total Employees], 0)
+			
+			```
+		lineageTag: b40a2c70-79ae-4061-886c-53d17ed6fb19
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Females %' = ```
+			DIVIDE([Females], ATTENDANCE[Total Employees], 0)
+			
+			```
+		lineageTag: c2442db7-9fa3-4c34-aedb-d804b6ebf573
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column EmployeeID
+		dataType: int64
+		lineageTag: b881034a-01fc-49ab-95da-5809b4791959
+		summarizeBy: none
+		sourceColumn: EmployeeID
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column FirstName
+		dataType: string
+		lineageTag: e189a6d8-dedf-4b3c-b021-f5080b83152c
+		summarizeBy: none
+		sourceColumn: FirstName
+
+		annotation SummarizationSetBy = Automatic
+
+	column LastName
+		dataType: string
+		lineageTag: 6faa7dda-9d6b-493c-a1f2-2204c916e93a
+		summarizeBy: none
+		sourceColumn: LastName
+
+		annotation SummarizationSetBy = Automatic
+
+	column Email
+		dataType: string
+		lineageTag: 1b1fee5c-4b73-4952-a877-e9b9e88ba125
+		summarizeBy: none
+		sourceColumn: Email
+
+		annotation SummarizationSetBy = Automatic
+
+	column DepartmentID
+		dataType: int64
+		lineageTag: d2315161-8677-4375-b499-fffb57258ac2
+		summarizeBy: none
+		sourceColumn: DepartmentID
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column JobTitle
+		dataType: string
+		lineageTag: 0fc81676-69d7-4e06-8ee3-9fdbb9accaf4
+		summarizeBy: none
+		sourceColumn: JobTitle
+
+		annotation SummarizationSetBy = Automatic
+
+	column Location
+		dataType: string
+		lineageTag: 1130e93a-e617-47ab-bdbc-dba0a2c12ee7
+		summarizeBy: none
+		sourceColumn: Location
+
+		annotation SummarizationSetBy = Automatic
+
+	column HireDate
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: d13cb0d8-6eda-4027-8bf4-fec386322f5c
+		summarizeBy: none
+		sourceColumn: HireDate
+
+		changedProperty = DataType
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column ManagerID
+		dataType: int64
+		lineageTag: e35c5f9c-a245-43b3-ae12-92ace6732610
+		summarizeBy: count
+		sourceColumn: ManagerID
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column DateOfBirth
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 5113d297-f5b4-45b1-90f6-0715ebc558ca
+		summarizeBy: none
+		sourceColumn: DateOfBirth
+
+		annotation SummarizationSetBy = Automatic
+
+	column Gender
+		dataType: string
+		lineageTag: 8bc7ff8e-c6cb-4078-b3f6-ec0c4a8a4294
+		summarizeBy: none
+		sourceColumn: Gender
+
+		annotation SummarizationSetBy = Automatic
+
+	column MaritalStatus
+		dataType: string
+		lineageTag: 58a51cd1-47fa-4cac-81f6-37b638773329
+		summarizeBy: none
+		sourceColumn: MaritalStatus
+
+		annotation SummarizationSetBy = Automatic
+
+	column Education
+		dataType: string
+		lineageTag: dbc9975b-fa0f-4d58-8b0e-2ea946c91280
+		summarizeBy: none
+		sourceColumn: Education
+
+		annotation SummarizationSetBy = Automatic
+
+	column YearsOfExperience
+		dataType: int64
+		lineageTag: a5133939-8412-44dc-a4dc-2347a90e6108
+		summarizeBy: sum
+		sourceColumn: YearsOfExperience
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column EmergencyContact
+		dataType: string
+		lineageTag: d8c4a826-daf5-4de2-b45a-251ead576c58
+		summarizeBy: none
+		sourceColumn: EmergencyContact
+
+		annotation SummarizationSetBy = Automatic
+
+	column Nationality
+		dataType: string
+		lineageTag: 9927b2c3-892e-420b-97e6-0f5ad705e443
+		summarizeBy: none
+		sourceColumn: Nationality
+
+		annotation SummarizationSetBy = Automatic
+
+	column EmploymentType
+		dataType: string
+		lineageTag: e9da1bd4-2f1b-4582-8cbc-3479fcd3b907
+		summarizeBy: none
+		sourceColumn: EmploymentType
+
+		annotation SummarizationSetBy = Automatic
+
+	column RemoteWorkEligible
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 5ee7f4da-744a-4fe0-a513-c5c59834db6f
+		summarizeBy: none
+		sourceColumn: RemoteWorkEligible
+
+		annotation SummarizationSetBy = Automatic
+
+	column VacationDays
+		dataType: int64
+		lineageTag: 0497af3e-4b4b-471f-a36b-b23a49316dbf
+		summarizeBy: sum
+		sourceColumn: VacationDays
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Age
+		dataType: int64
+		formatString: 0
+		lineageTag: 99d4afed-29d6-4b99-af71-7e7200ae489b
+		summarizeBy: sum
+		sourceColumn: Age
+
+		annotation SummarizationSetBy = Automatic
+
+	column Tenure = ```
+			
+			VAR TermDate = LOOKUPVALUE(Attrition[TerminationDate], Attrition[EmployeeID], Employees[EmployeeID])
+			VAR EndDate = IF(ISBLANK(TermDate), TODAY(), TermDate)
+			RETURN DATEDIFF(EMPLOYEES[HireDate], EndDate, YEAR)
+			
+			```
+		formatString: 0
+		lineageTag: 48f0682d-083e-45fc-800e-bc69e926f70b
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Age Group' = ```
+			
+			SWITCH(
+			    TRUE(),
+			    EMPLOYEES[Age] >= 20 && EMPLOYEES[Age] < 30, "20-29",
+			    EMPLOYEES[Age] >= 30 && EMPLOYEES[Age] < 40, "30-39",
+			    EMPLOYEES[Age] >= 40 && EMPLOYEES[Age] < 50, "40-49",
+			    EMPLOYEES[Age] >= 50 && EMPLOYEES[Age] < 60, "50-59",
+			    EMPLOYEES[Age] >= 60, "60+"
+			)
+			
+			```
+		lineageTag: 4a3ec055-962e-4a8a-9d13-26040f71bf0d
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column FullName = ```
+			Employees[FirstName] & " " & Employees[LastName]
+			
+			```
+		lineageTag: c10cfded-b08b-4eb5-aaae-f4dd6bd52336
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition EMPLOYEES = m
+		mode: import
+		source =
+				let
+				    Source = Snowflake.Databases("vo19612.west-europe.azure.snowflakecomputing.com","STRETCHDEVELOPER"),
+				    STRETCH_DEMO_DATA_Database = Source{[Name="STRETCH_DEMO_DATA",Kind="Database"]}[Data],
+				    HR_DEMO_DATA_Schema = STRETCH_DEMO_DATA_Database{[Name="HR_DEMO_DATA",Kind="Schema"]}[Data],
+				    EMPLOYEES_Table = HR_DEMO_DATA_Schema{[Name="EMPLOYEES",Kind="Table"]}[Data],
+				    #"Added Custom" = Table.AddColumn(EMPLOYEES_Table, "Age", each Number.From(DateTime.LocalNow() - [DateOfBirth]) / 365),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Added Custom",{{"Age", Int64.Type}, {"EmployeeID", Int64.Type}, {"DepartmentID", Int64.Type}, {"ManagerID", Int64.Type}, {"YearsOfExperience", Int64.Type}, {"VacationDays", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

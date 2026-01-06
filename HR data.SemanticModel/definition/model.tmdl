@@ -1,0 +1,25 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-DK
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBI_QueryOrder = ["ATTENDANCE","DEPARTMENTS","ATTRITION","EMPLOYEES","PERFORMANCE","SALARY","TRAINING"]
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBI_ProTooling = ["DaxQueryView_Desktop"]
+
+ref table ATTENDANCE
+ref table DEPARTMENTS
+ref table ATTRITION
+ref table EMPLOYEES
+ref table PERFORMANCE
+ref table SALARY
+ref table TRAINING
+ref table DateTable
+
+ref cultureInfo en-US
+

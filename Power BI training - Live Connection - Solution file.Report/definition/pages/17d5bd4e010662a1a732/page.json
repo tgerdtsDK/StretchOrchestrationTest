@@ -1,8 +1,0 @@
-{
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.0.0/schema.json",
-  "name": "17d5bd4e010662a1a732",
-  "displayName": "KPI charts",
-  "displayOption": "FitToPage",
-  "height": 720,
-  "width": 1280
-}

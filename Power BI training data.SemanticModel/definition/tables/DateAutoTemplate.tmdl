@@ -1,0 +1,220 @@
+table DateAutoTemplate
+	isHidden
+	lineageTag: 1961ebe1-33cb-4a5e-a96a-6e822568b9f7
+	dataCategory: Time
+
+	column Date
+		isHidden
+		isKey
+		formatString: dd/mm/yyyy
+		lineageTag: 28669f8b-2a0b-4449-bec8-c2ad34c56ac3
+		dataCategory: PaddedDateTableDates
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Date]
+
+		annotation SQLBI_AttributeTypes = Date
+
+	column Year
+		isHidden
+		lineageTag: b9ebe64c-e868-4f2a-bd22-df34fa7e0a44
+		dataCategory: Years
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Year]
+
+	column 'Year Quarter Number'
+		isHidden
+		lineageTag: e2d18d68-2123-42a1-868f-c67bdd502e32
+		dataCategory: Quarters
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Year Quarter Number]
+
+	column 'Year Quarter'
+		isHidden
+		lineageTag: ec21ceb2-d65c-4518-a9fc-a5b8b4660d9e
+		dataCategory: Quarters
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Year Quarter]
+		sortByColumn: 'Year Quarter Number'
+
+	column Quarter
+		isHidden
+		lineageTag: f07db549-b44d-4f15-ab70-ad47d5d92992
+		dataCategory: QuarterOfYear
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Quarter]
+
+	column 'Year Month'
+		isHidden
+		lineageTag: 9ed9bdfd-9b27-46b6-baa0-970524c74254
+		dataCategory: Months
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Year Month]
+		sortByColumn: 'Year Month Number'
+
+	column 'Year Month Number'
+		isHidden
+		lineageTag: 923dd31f-5366-4020-a9da-14d56fdf3eb5
+		dataCategory: Months
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Year Month Number]
+
+	column Month
+		isHidden
+		lineageTag: 3194ae60-2f01-463f-8a4e-995519ff9bf9
+		dataCategory: MonthOfYear
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Month]
+		sortByColumn: 'Month Number'
+
+	column 'Month Number'
+		isHidden
+		lineageTag: 6bcdb230-786c-4a0b-9791-983db75f8d05
+		dataCategory: MonthOfYear
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Month Number]
+
+	column 'Day of Week Number'
+		isHidden
+		lineageTag: 4531e4fd-239b-4c60-b0c6-e9d3d8eb89c0
+		dataCategory: DayOfWeek
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Day of Week Number]
+
+		annotation SQLBI_AttributeTypes = DayOfWeek
+
+		annotation SQLBI_FilterSafe = True
+
+	column 'Day of Week'
+		isHidden
+		lineageTag: 56bb8712-24b1-4b86-b13d-3dae1bc18a62
+		dataCategory: DayOfWeek
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Day of Week]
+		sortByColumn: 'Day of Week Number'
+
+		annotation SQLBI_FilterSafe = True
+
+	column IsWorking
+		isHidden
+		lineageTag: 57f92d2b-f051-4cf5-a469-12b2bc5d8c65
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [IsWorking]
+
+		annotation SQLBI_FilterSafe = True
+
+	column 'Working Day Value'
+		isHidden
+		lineageTag: 46300c4d-b6f2-4241-a6d8-ad2a070798a6
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Working Day Value]
+
+		annotation SQLBI_FilterSafe = True
+
+	column 'Holiday Name'
+		isHidden
+		lineageTag: 26e453d5-fb33-4bb4-819b-1526766c78b3
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Holiday Name]
+
+		annotation SQLBI_FilterSafe = True
+
+	column DateWithTransactions
+		isHidden
+		lineageTag: 64001e26-2b46-470a-bdb0-c9835c7113f9
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [DateWithTransactions]
+
+		annotation SQLBI_AttributeTypes = DateDuration
+
+	hierarchy Calendar
+		isHidden
+		lineageTag: f64fb1d6-c947-4624-8822-815940f5ecf5
+
+		level Year
+			lineageTag: 3976f691-24b4-4780-aa86-3066dfdcd897
+			column: Year
+
+		level Month
+			lineageTag: b0a564a7-60b2-430e-8cb7-23d9a06eebd1
+			column: 'Year Month'
+
+		level Date
+			lineageTag: 250c84e1-c208-4ab4-8e03-d530ca5beca8
+			column: Date
+
+	partition DateAutoTemplate = calculated
+		mode: import
+		source = ```
+				
+				--  
+				--     Configuration
+				--  
+				VAR __FirstDayOfWeek = 1
+				VAR __WorkingDays = { 2, 3, 4, 5, 6 }
+				----------------------------------------
+				VAR __WeekDayCalculationType = IF ( __FirstDayOfWeek = 0, 7, __FirstDayOfWeek ) + 10
+				VAR __Calendar = 
+				    VAR __FirstYear = YEAR ( MINX ( { MIN ( 'Fact_Cleaned'[ShippingDateKey] ), MIN ( 'Fact_Cleaned'[OrderDateKey] ) }, ''[Value] ) )
+				    VAR __LastYear =  YEAR ( MAXX ( { MAX ( 'Fact_Cleaned'[ShippingDateKey] ), MAX ( 'Fact_Cleaned'[OrderDateKey] ) }, ''[Value] ) )
+				    RETURN CALENDAR (
+				        DATE ( __FirstYear, 1, 1 ),
+				        DATE ( __LastYear, 12, 31 )
+				    )
+				VAR __Step3 = 
+				    GENERATE (
+				        __Calendar,
+				        VAR __IsStandardLocale = IF ( FORMAT( DATE( 2000, 1, 1 ), "oooo", "en-GB" ) = "oooo", TRUE, FALSE )
+				        VAR __MonthFormatString = IF( __IsStandardLocale, "mmm", "ooo" )
+				        VAR __DayFormatString = IF( __IsStandardLocale, "ddd", "aaa" )
+				        VAR __LastTransactionDate = MAXX ( { MAX ( 'Fact_Cleaned'[ShippingDateKey] ), MAX ( 'Fact_Cleaned'[OrderDateKey] ) }, ''[Value] )
+				        VAR __Date = [Date]
+				        VAR __YearNumber = YEAR ( __Date )
+				        VAR __QuarterNumber = QUARTER ( __Date )
+				        VAR __YearQuarterNumber = CONVERT ( __YearNumber * 4 + __QuarterNumber - 1, INTEGER )
+				        VAR __MonthNumber = MONTH ( __Date )
+				        VAR __WeekDayNumber = WEEKDAY ( __Date, __WeekDayCalculationType )
+				        VAR __WeekDay = FORMAT ( __Date, __DayFormatString, "en-GB" )
+				        VAR __HolidayName = LOOKUPVALUE ( 'Holidays'[Holiday Name], 'Holidays'[Holiday Date],  __Date  )
+				        VAR __IsWorkingDay = WEEKDAY ( __Date, 1 ) IN __WorkingDays && ISBLANK ( __HolidayName )
+				        RETURN ROW ( 
+				            "Year", __YearNumber,
+				            "Year Quarter Number", __YearQuarterNumber,
+				            "Year Quarter", FORMAT ( __QuarterNumber, "\Q0", "en-GB" ) & "-" & FORMAT ( __YearNumber, "0000", "en-GB" ),
+				            "Quarter", FORMAT( __QuarterNumber, "\Q0", "en-GB" ),
+				            "Year Month", FORMAT ( __Date, __MonthFormatString & " yyyy", "en-GB" ),
+				            "Year Month Number", __YearNumber * 12 + __MonthNumber - 1,
+				            "Month", FORMAT ( __Date, __MonthFormatString, "en-GB" ),
+				            "Month Number", __MonthNumber,
+				            "Day of Week Number", __WeekDayNumber,
+				            "Day of Week", __WeekDay,
+				            "IsWorking", __IsWorkingDay,
+				            "Working Day Value", IF ( __IsWorkingDay, 1 ),
+				            "Holiday Name", __HolidayName,
+				            "DateWithTransactions", __Date <= __LastTransactionDate 
+				        )
+				    )
+				RETURN
+				    __Step3
+				```
+
+	annotation SQLBI_Template = Dates
+
+	annotation SQLBI_TemplateTable = DateAutoTemplate
+
+	annotation SQLBI_CalendarType = Calendar
+

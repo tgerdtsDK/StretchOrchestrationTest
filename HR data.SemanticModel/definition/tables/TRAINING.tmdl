@@ -1,0 +1,218 @@
+table TRAINING
+	lineageTag: 43294a21-0d26-4b82-9684-e168f4d156e6
+
+	measure 'Avg Training Score LY' = ```
+			
+			VAR SelectedYear = MAX('DateTable'[Year])
+			VAR LastYearScore = 
+			    CALCULATE(
+			        AVERAGE(Training[Score]),
+			        YEAR(Training[CompletionDate]) = SelectedYear - 1
+			    )
+			RETURN
+			    COALESCE(LastYearScore, 80)  -- Default to 80 when no data exists
+			
+			```
+		lineageTag: ff229b6d-d1c7-440a-880c-9cdf1aa6fa25
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Avg Training Score' = ```
+			
+			CALCULATE(
+			    AVERAGE(Training[Score]),
+			    YEAR(Training[CompletionDate]) IN VALUES('DateTable'[Year])
+			)
+			
+			```
+		lineageTag: 8f3abdb9-7200-4335-abe4-f47fb4428032
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Total Training Cost' = ```
+			
+			CALCULATE(
+			    SUM(Training[TrainingCost]),
+			    YEAR(Training[CompletionDate]) IN VALUES('DateTable'[Year])
+			)
+			
+			```
+		lineageTag: a32e2c3d-294e-4d55-89f3-2898f13270cd
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Training Format' = ```
+			
+			CALCULATE(
+			    COUNT(Training[TrainingFormat]),
+			    YEAR(Training[CompletionDate]) IN VALUES('DateTable'[Year])
+			)
+			
+			```
+		formatString: 0
+		lineageTag: 53df85db-0df5-4221-ad75-d47b1a64259f
+
+	measure 'Training Cost per Active Employee' = ```
+			
+			VAR SelectedYear = MAX('DateTable'[Year])
+			VAR AllYearsSelected = NOT ISFILTERED('DateTable'[Year])
+			
+			VAR TotalCost = 
+			    IF(
+			        AllYearsSelected,
+			        SUM(Training[TrainingCost]),  -- Sum across all years if no year is selected
+			        CALCULATE(
+			            SUM(Training[TrainingCost]),
+			            YEAR(Training[CompletionDate]) = SelectedYear
+			        )
+			    )
+			
+			VAR ActiveEmployees = 
+			    IF(
+			        AllYearsSelected,
+			        DISTINCTCOUNT(Attendance[EmployeeID]),  -- Count across all years if no year is selected
+			        CALCULATE(
+			            DISTINCTCOUNT(Attendance[EmployeeID]),
+			            YEAR(Attendance[Date]) = SelectedYear
+			        )
+			    )
+			
+			RETURN 
+			    DIVIDE(TotalCost, ActiveEmployees, 0)
+			
+			
+			```
+		lineageTag: 4d6d4abd-05b6-4c12-a411-132766c2c8b1
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Training Budget' = ```
+			
+			IF(
+			    ISFILTERED('DateTable'[Year]),
+			    5000,  -- Training budget for a single selected year
+			    20000  -- Training budget when all years are selected
+			)
+			
+			
+			```
+		lineageTag: cd7be9bf-5c37-425a-94ce-649b4fc67f06
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column TrainingID
+		dataType: int64
+		lineageTag: 88ae3953-11ac-4eca-86ec-8c0a74f8dcf5
+		summarizeBy: count
+		sourceColumn: TrainingID
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column EmployeeID
+		dataType: double
+		lineageTag: 6f10e4fe-e738-4c06-8e75-06102375f167
+		summarizeBy: none
+		sourceColumn: EmployeeID
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column CourseName
+		dataType: string
+		lineageTag: 26ef6084-a499-4579-b219-41c5b1f6d57a
+		summarizeBy: none
+		sourceColumn: CourseName
+
+		annotation SummarizationSetBy = Automatic
+
+	column Provider
+		dataType: string
+		lineageTag: aa9a48bb-15ad-45da-9550-b4707ab4b696
+		summarizeBy: none
+		sourceColumn: Provider
+
+		annotation SummarizationSetBy = Automatic
+
+	column CompletionDate
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: a9bcf99c-f8f5-409d-a534-62d00a49926a
+		summarizeBy: none
+		sourceColumn: CompletionDate
+
+		annotation SummarizationSetBy = Automatic
+
+	column ExpiryDate
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: d4c48935-7d3d-4333-96c3-bfb8fab105b8
+		summarizeBy: none
+		sourceColumn: ExpiryDate
+
+		annotation SummarizationSetBy = Automatic
+
+	column Score
+		dataType: int64
+		lineageTag: 0f74aa9d-cc9e-4f46-9172-85b328259bc1
+		summarizeBy: sum
+		sourceColumn: Score
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column CertificationValid
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 9f937ae5-5568-46c9-947f-1b1acbfc5f05
+		summarizeBy: none
+		sourceColumn: CertificationValid
+
+		annotation SummarizationSetBy = Automatic
+
+	column TrainingCost
+		dataType: double
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: b43dec59-bc3d-4d1a-bb3c-4be5f95269b5
+		summarizeBy: sum
+		sourceColumn: TrainingCost
+
+		annotation SummarizationSetBy = Automatic
+
+	column TrainingDuration
+		dataType: double
+		lineageTag: 6a6f7603-19e4-442e-ab61-3cc37231db97
+		summarizeBy: sum
+		sourceColumn: TrainingDuration
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column TrainingFormat
+		dataType: string
+		lineageTag: 93f96f92-5945-46c3-89e9-53b6d320cedc
+		summarizeBy: none
+		sourceColumn: TrainingFormat
+
+		annotation SummarizationSetBy = Automatic
+
+	partition TRAINING = m
+		mode: import
+		source =
+				let
+				    Source = Snowflake.Databases("vo19612.west-europe.azure.snowflakecomputing.com","STRETCHDEVELOPER"),
+				    STRETCH_DEMO_DATA_Database = Source{[Name="STRETCH_DEMO_DATA",Kind="Database"]}[Data],
+				    HR_DEMO_DATA_Schema = STRETCH_DEMO_DATA_Database{[Name="HR_DEMO_DATA",Kind="Schema"]}[Data],
+				    TRAINING_Table = HR_DEMO_DATA_Schema{[Name="TRAINING",Kind="Table"]}[Data],
+				    #"Changed Type" = Table.TransformColumnTypes(TRAINING_Table,{{"TrainingID", Int64.Type}, {"Score", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,120 @@
+table PERFORMANCE
+	lineageTag: 9aa6373f-4b5a-4099-8c43-dc80e3ee8a0c
+
+	measure 'Avg Performance Rating' = ```
+			AVERAGEX( VALUES(Performance[EmployeeID]), CALCULATE(AVERAGE(Performance[nRating])) )
+			
+			
+			```
+		formatString: 0
+		lineageTag: d98de420-db73-42a8-90b4-5f3b0fb86947
+
+	column ReviewID
+		dataType: double
+		lineageTag: cfce6f9f-4b02-4510-9d6b-a18c5bbb2837
+		summarizeBy: count
+		sourceColumn: ReviewID
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column EmployeeID
+		dataType: int64
+		lineageTag: 5a8b8c37-067f-4d78-a237-8f60dd220b04
+		summarizeBy: none
+		sourceColumn: EmployeeID
+
+		changedProperty = DataType
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column ReviewDate
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 12679aba-a89e-4e95-a5c1-4f94b278354d
+		summarizeBy: none
+		sourceColumn: ReviewDate
+
+		annotation SummarizationSetBy = Automatic
+
+	column Rating
+		dataType: string
+		lineageTag: 603f3c35-812a-4c5f-a4a4-603740cde6ea
+		summarizeBy: none
+		sourceColumn: Rating
+
+		annotation SummarizationSetBy = Automatic
+
+	column ReviewerID
+		dataType: double
+		lineageTag: c4b05edc-6207-4015-b438-ad4ece24306a
+		summarizeBy: count
+		sourceColumn: ReviewerID
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column GoalsAchieved
+		dataType: int64
+		lineageTag: 69c19fac-e846-4085-8ff9-1d5d88420577
+		summarizeBy: sum
+		sourceColumn: GoalsAchieved
+
+		changedProperty = DataType
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column DevelopmentAreas
+		dataType: string
+		lineageTag: 48cc2cc5-7ab1-4538-8df6-1859eacc7fa7
+		summarizeBy: none
+		sourceColumn: DevelopmentAreas
+
+		annotation SummarizationSetBy = Automatic
+
+	column NextReviewDate
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 6e405b07-ae34-4574-aa9a-66874f48d502
+		summarizeBy: none
+		sourceColumn: NextReviewDate
+
+		annotation SummarizationSetBy = Automatic
+
+	column nRating
+		dataType: int64
+		formatString: 0
+		lineageTag: adc75e62-0d05-44ee-b58d-43cf6c6b9a99
+		summarizeBy: sum
+		sourceColumn: nRating
+
+		annotation SummarizationSetBy = Automatic
+
+	partition PERFORMANCE = m
+		mode: import
+		source = ```
+				let
+				    Source = Snowflake.Databases("vo19612.west-europe.azure.snowflakecomputing.com","STRETCHDEVELOPER"),
+				    STRETCH_DEMO_DATA_Database = Source{[Name="STRETCH_DEMO_DATA",Kind="Database"]}[Data],
+				    HR_DEMO_DATA_Schema = STRETCH_DEMO_DATA_Database{[Name="HR_DEMO_DATA",Kind="Schema"]}[Data],
+				    PERFORMANCE_Table = HR_DEMO_DATA_Schema{[Name="PERFORMANCE",Kind="Table"]}[Data],
+				    #"Added Custom" = Table.AddColumn(PERFORMANCE_Table, "nRating", each if [Rating] = "Excellent" then 4 
+				else if [Rating] = "Good" then 3 
+				else if [Rating] = "Satisfactory" then 2 
+				else if [Rating] = "Needs Improvement" then 1 
+				else null),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Added Custom",{{"nRating", Int64.Type}})
+				in
+				    #"Changed Type"
+				```
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

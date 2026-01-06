@@ -1,0 +1,174 @@
+table ATTRITION
+	lineageTag: 5f3e986d-04a9-4723-b5cc-2a3fb6c5dd77
+
+	measure 'Total Terminations' = ```
+			
+			IF(
+			    ISFILTERED('DateTable'[Year]),
+			    CALCULATE(
+			        DISTINCTCOUNT(ATTRITION[EmployeeID]),
+			        YEAR(ATTRITION[TerminationDate]) = MAX('DateTable'[Year])
+			    ),
+			    CALCULATE(
+			        DISTINCTCOUNT(ATTRITION[EmployeeID])
+			    )
+			)
+			
+			
+			```
+		formatString: 0
+		lineageTag: bd0db8d3-14d7-46ba-bd9f-d566a477fbe6
+
+	measure 'Voluntary Attrition' = COUNTROWS(FILTER('Attrition', 'Attrition'[IsVoluntary] = TRUE()))
+		formatString: 0
+		lineageTag: 88a23bba-ca47-4e52-b221-13e0b655ebde
+
+	measure 'Rehire Eligible %' = ```
+			
+			VAR TotalEmployees = COUNT(ATTRITION[EmployeeID])
+			VAR EligibleEmployees = CALCULATE(COUNT(ATTRITION[EmployeeID]), ATTRITION[RehireEligible] = TRUE)
+			RETURN 
+			DIVIDE(EligibleEmployees, TotalEmployees, 0)
+			```
+		formatString: 0.00\ %;-0.00\ %;0.00\ %
+		lineageTag: 643ff981-10c3-44dc-a034-c8bef5c3e096
+
+	measure 'Involuntary Attrition' = COUNTROWS(FILTER('Attrition', 'Attrition'[IsVoluntary] = FALSE()))
+		formatString: 0
+		lineageTag: eea3f723-edae-4347-9c5c-90363f8ea599
+
+	measure 'Attrition Rate %' = ```
+			
+			VAR TotalEmployees = COUNT(EMPLOYEES[EmployeeID])
+			VAR ExitedEmployees = COUNT(ATTRITION[EmployeeID])
+			RETURN 
+			DIVIDE(ExitedEmployees, TotalEmployees, 0)
+			
+			```
+		formatString: 0.00\ %;-0.00\ %;0.00\ %
+		lineageTag: 235356f9-beed-46e0-8db7-1f12584b7991
+
+	measure 'Exit Count' = ```
+			
+			COUNT(ATTRITION[EmployeeID])
+			
+			```
+		formatString: 0
+		lineageTag: 329349f8-0750-4cc6-b2bf-ca4ee3cceecc
+
+	measure 'Exit Interview Percentage' = ```
+			
+			DIVIDE(
+			    COUNTAX(
+			        FILTER(ATTRITION, ATTRITION[ExitInterviewConducted] = TRUE()),
+			        ATTRITION[EmployeeID]
+			    ),
+			    COUNTROWS(ATTRITION),
+			    0
+			)
+			
+			```
+		formatString: 0.00\ %;-0.00\ %;0.00\ %
+		lineageTag: 12eb44df-69de-4ad2-8f75-3033aa8d5879
+
+	measure 'Total Attrition' = ```
+			
+			CALCULATE(
+			    COUNT(ATTRITION[AttritionID]), 
+			    YEAR(ATTRITION[TerminationDate]) = MAX('DateTable'[Year])
+			)
+			
+			```
+		formatString: 0
+		lineageTag: 9b782cc0-148c-4329-9367-7bcc68e2779f
+
+	column AttritionID
+		dataType: int64
+		lineageTag: c59b27b7-f560-4407-abcd-0f9964be44ec
+		summarizeBy: count
+		sourceColumn: AttritionID
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column EmployeeID
+		dataType: int64
+		lineageTag: cf1c3f30-3aa6-4251-a277-6f5e53e366a9
+		summarizeBy: none
+		sourceColumn: EmployeeID
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column TerminationDate
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: eb28369c-28c0-4a43-b518-8bb529ae7b3c
+		summarizeBy: none
+		sourceColumn: TerminationDate
+
+		annotation SummarizationSetBy = Automatic
+
+	column TerminationReason
+		dataType: string
+		lineageTag: 961b38c1-afc9-4f3a-a892-9ce480850323
+		summarizeBy: none
+		sourceColumn: TerminationReason
+
+		annotation SummarizationSetBy = Automatic
+
+	column IsVoluntary
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 0dcad056-84ca-4bd7-8079-f64989839a0a
+		summarizeBy: none
+		sourceColumn: IsVoluntary
+
+		annotation SummarizationSetBy = Automatic
+
+	column ExitInterviewConducted
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 4c1eea6c-a95d-424b-a66c-2a47aa4c96a1
+		summarizeBy: none
+		sourceColumn: ExitInterviewConducted
+
+		annotation SummarizationSetBy = Automatic
+
+	column RehireEligible
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 9e029bc2-afe0-4070-b86e-2e4bb4345af2
+		summarizeBy: none
+		sourceColumn: RehireEligible
+
+		annotation SummarizationSetBy = Automatic
+
+	column NoticePeriodDays
+		dataType: int64
+		lineageTag: 301752ba-5fef-4e81-a20a-f70573c8ace1
+		summarizeBy: sum
+		sourceColumn: NoticePeriodDays
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition ATTRITION = m
+		mode: import
+		source =
+				let
+				    Source = Snowflake.Databases("vo19612.west-europe.azure.snowflakecomputing.com","STRETCHDEVELOPER"),
+				    STRETCH_DEMO_DATA_Database = Source{[Name="STRETCH_DEMO_DATA",Kind="Database"]}[Data],
+				    HR_DEMO_DATA_Schema = STRETCH_DEMO_DATA_Database{[Name="HR_DEMO_DATA",Kind="Schema"]}[Data],
+				    ATTRITION_Table = HR_DEMO_DATA_Schema{[Name="ATTRITION",Kind="Table"]}[Data],
+				    #"Changed Type" = Table.TransformColumnTypes(ATTRITION_Table,{{"AttritionID", Int64.Type}, {"EmployeeID", Int64.Type}, {"NoticePeriodDays", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,225 @@
+table PROCUREMENT_FACT
+	lineageTag: e94ec6e4-0e77-4dd5-a478-a34688d5e0e0
+
+	column productId
+		dataType: string
+		isHidden
+		lineageTag: 14bb3a5a-1ad5-4b1f-b2fc-a517eaf2c614
+		summarizeBy: none
+		sourceColumn: productId
+
+		annotation SummarizationSetBy = Automatic
+
+	column supplierId
+		dataType: string
+		lineageTag: 898aab2c-4139-4264-81ef-595d54463041
+		summarizeBy: none
+		sourceColumn: supplierId
+
+		annotation SummarizationSetBy = Automatic
+
+	column warehouseId
+		dataType: string
+		lineageTag: a70aabc3-62c0-49d7-bacc-e8b16775a3fc
+		summarizeBy: none
+		sourceColumn: warehouseId
+
+		annotation SummarizationSetBy = Automatic
+
+	column orderDate
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: ed4ae352-06a0-47bd-9799-b80221d5904d
+		summarizeBy: none
+		sourceColumn: orderDate
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column requestedDeliveryDate
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: a076e0c3-4891-45f9-be86-28a6b06ccda7
+		summarizeBy: none
+		sourceColumn: requestedDeliveryDate
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column expectedDeliveryDate
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 5891c772-6fa6-46d5-918b-fc51c133d12b
+		summarizeBy: none
+		sourceColumn: expectedDeliveryDate
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column actualDeliveryDate
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 1db0e5f8-5123-45c6-a66b-09c4a0cc48b4
+		summarizeBy: none
+		sourceColumn: actualDeliveryDate
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column quantityOrdered
+		dataType: double
+		lineageTag: b4278d41-3db2-4dc8-8a5b-7f2710cc00a5
+		summarizeBy: sum
+		sourceColumn: quantityOrdered
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column quantityReceived
+		dataType: double
+		lineageTag: 2d8eb930-9012-4088-a307-6afd6de04651
+		summarizeBy: sum
+		sourceColumn: quantityReceived
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column leadTime
+		dataType: double
+		lineageTag: 5809324e-a1ad-480b-b215-bd3ffe533202
+		summarizeBy: sum
+		sourceColumn: leadTime
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column unitCost
+		dataType: double
+		lineageTag: 11a35f57-6233-4098-b17a-d14d4ec2141b
+		summarizeBy: sum
+		sourceColumn: unitCost
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column totalCost
+		dataType: double
+		lineageTag: 2a692fcc-6c35-4da8-a91c-72890b07b523
+		summarizeBy: sum
+		sourceColumn: totalCost
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column orderToDeliveryTime
+		dataType: double
+		lineageTag: a01be887-c622-4863-ad5c-6a432acadf43
+		summarizeBy: sum
+		sourceColumn: orderToDeliveryTime
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column onTimeDelivery
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 99bfb6ae-4907-4996-9692-6e86c121e6ac
+		summarizeBy: none
+		sourceColumn: onTimeDelivery
+
+		annotation SummarizationSetBy = Automatic
+
+	column orderCycle
+		dataType: double
+		lineageTag: b3b56775-2086-4260-8ddb-fbf8e0ad8e43
+		summarizeBy: sum
+		sourceColumn: orderCycle
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column approvalTime
+		dataType: double
+		lineageTag: cde50997-d1ff-468e-b9a2-321215d45f96
+		summarizeBy: sum
+		sourceColumn: approvalTime
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column requestToOrderTime
+		dataType: double
+		lineageTag: 02248621-51ee-4af3-8da2-b85011a38fdd
+		summarizeBy: sum
+		sourceColumn: requestToOrderTime
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column paymentTerms
+		dataType: string
+		lineageTag: 3e19a87d-d133-4eaf-a57f-2a9c2152df39
+		summarizeBy: none
+		sourceColumn: paymentTerms
+
+		annotation SummarizationSetBy = Automatic
+
+	column paymentDate
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 09558666-02d5-4c6f-bcc2-9f587a682a73
+		summarizeBy: none
+		sourceColumn: paymentDate
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column invoiceDate
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 9f5b2f95-1cde-44a3-9f5e-d23b687b24bd
+		summarizeBy: none
+		sourceColumn: invoiceDate
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column orderStatus
+		dataType: string
+		lineageTag: ad1e6389-b674-4789-9c08-8ad9811f2822
+		summarizeBy: none
+		sourceColumn: orderStatus
+
+		annotation SummarizationSetBy = Automatic
+
+	partition PROCUREMENT_FACT = m
+		mode: import
+		queryGroup: Tables
+		source =
+				let
+				    Source = Snowflake.Databases(#"p_Snowflake Server Name",#"p_Snowflake Warehouse Name",[Implementation="2.0"]),
+				    Database = Source{[Name=#"p_Snowflake Database Name",Kind="Database"]}[Data],
+				    Schema = Database{[Name=#"p_Snowflake Schema Name",Kind="Schema"]}[Data],
+				    Table = Schema{[Name=#"p_Snowflake Table Name",Kind="Table"]}[Data]
+				in
+				    Table
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

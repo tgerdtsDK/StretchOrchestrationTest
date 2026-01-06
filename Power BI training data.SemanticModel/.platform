@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "Power BI training data"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "25386643-40fb-a293-4a12-91b16e168f8f"
+  }
+}

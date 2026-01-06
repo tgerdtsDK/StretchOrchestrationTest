@@ -1,0 +1,391 @@
+table SALARY
+	lineageTag: f30685a5-cd3f-4200-8a4d-196fa5f13f07
+
+	measure 'Total Emp Expense' = ```
+			
+			SUMX(
+			    'Employees',
+			    CALCULATE(
+			        SUM(Salary[BaseSalary]) + SUM(Salary[Bonus]),
+			        YEAR(Salary[EffectiveDate]) IN VALUES('DateTable'[Year])
+			    )
+			)
+			
+			```
+		lineageTag: 0344a970-90f5-4c16-84fd-05a30f5ce913
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Avg Base Salary Per Employee' = ```
+			
+			AVERAGEX(
+			    VALUES('Employees'[EmployeeID]),
+			    CALCULATE(
+			        AVERAGE(Salary[BaseSalary]),
+			        YEAR(Salary[EffectiveDate]) IN VALUES('DateTable'[Year])
+			    )
+			)
+			
+			```
+		lineageTag: 07c68064-09b8-4fef-b782-c4318a768508
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Total Pay' = ```
+			
+			CALCULATE(
+			    SUMX(
+			        VALUES(Salary[EmployeeID]), 
+			        AVERAGE(Salary[BaseSalary])
+			    ),
+			    YEAR(Salary[EffectiveDate]) IN VALUES('DateTable'[Year])
+			)
+			
+			
+			```
+		lineageTag: 455c44f1-a6de-4de9-b3c8-5fa80fd01659
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Avg Bonus Per Employee' = ```
+			
+			AVERAGEX(
+			    VALUES('Employees'[EmployeeID]),
+			    CALCULATE(
+			        AVERAGE(Salary[Bonus]),
+			        YEAR(Salary[EffectiveDate]) IN VALUES('DateTable'[Year])
+			    )
+			)
+			
+			```
+		lineageTag: 62f6bd17-a2ae-442c-a15e-4538d0a9b343
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Rolling 12 Months Salary' = ```
+			
+			CALCULATE(
+			    SUM(SALARY[BaseSalary]),
+			    DATESINPERIOD(
+			        'DateTable'[Date],
+			        LASTDATE('DateTable'[Date]),
+			        -12,
+			        MONTH
+			    ),
+			    FILTER(
+			        SALARY,
+			        SALARY[EffectiveDate] <= LASTDATE('DateTable'[Date]) &&
+			        SALARY[EffectiveDate] >= DATEADD(LASTDATE('DateTable'[Date]), -12, MONTH)
+			    )
+			)
+			
+			```
+		lineageTag: a67cbb97-2ac7-461d-8c1c-e9f37d0ae073
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Prev 12M' = ```
+			
+			CALCULATE(
+			    SUM(SALARY[BaseSalary]),
+			    DATESINPERIOD(
+			        'DateTable'[Date],
+			        DATEADD(LASTDATE('DateTable'[Date]), -12, MONTH),  // Shift the date back by 12 months
+			        -12,
+			        MONTH
+			    ),
+			    FILTER(
+			        SALARY,
+			        SALARY[EffectiveDate] <= DATEADD(LASTDATE('DateTable'[Date]), -12, MONTH) &&
+			        SALARY[EffectiveDate] >= DATEADD(LASTDATE('DateTable'[Date]), -24, MONTH)  // Get the period from 24 to 12 months ago
+			    )
+			)
+			
+			```
+		lineageTag: c9077605-b676-4d96-b6fa-e925a196a02d
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Rolling 12 Months Bonus' = ```
+			
+			CALCULATE(
+			    SUM(SALARY[Bonus]),
+			    DATESINPERIOD(
+			        'DateTable'[Date],
+			        LASTDATE('DateTable'[Date]),
+			        -12,
+			        MONTH
+			    ),
+			    FILTER(
+			        SALARY,
+			        SALARY[EffectiveDate] <= LASTDATE('DateTable'[Date]) &&
+			        SALARY[EffectiveDate] >= DATEADD(LASTDATE('DateTable'[Date]), -12, MONTH)
+			    )
+			)
+			
+			```
+		lineageTag: 0d88fc90-2672-421c-a79c-2cd8432210f3
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Prev. 12M' = ```
+			
+			CALCULATE(
+			    SUM(SALARY[Bonus]),
+			    DATESINPERIOD(
+			        'DateTable'[Date],
+			        DATEADD(LASTDATE('DateTable'[Date]), -12, MONTH),  // Shift the date back by 12 months
+			        -12,
+			        MONTH
+			    ),
+			    FILTER(
+			        SALARY,
+			        SALARY[EffectiveDate] <= DATEADD(LASTDATE('DateTable'[Date]), -12, MONTH) &&
+			        SALARY[EffectiveDate] >= DATEADD(LASTDATE('DateTable'[Date]), -24, MONTH)  // Get the period from 24 to 12 months ago
+			    )
+			)
+			
+			```
+		lineageTag: 37d66b96-1274-41bd-a9cb-d7190d8456ab
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Pay Equality Ratio Rolling 12 Months (%)' = ```
+			
+			DIVIDE( 
+			    [Rolling 12 Months Salary for Females],[Rolling 12 Months Salary for Males],
+			    0
+			)
+			
+			```
+		formatString: 0.00\ %;-0.00\ %;0.00\ %
+		lineageTag: a6c5ff08-c55d-4c82-9f7f-3bd1f90cb9dc
+
+	measure 'Rolling 12 Months Salary for Females' = ```
+			
+			CALCULATE(
+			    SUM(SALARY[BaseSalary]),
+			    DATESINPERIOD(
+			        'DateTable'[Date],
+			        LASTDATE('DateTable'[Date]),
+			        -12,
+			        MONTH
+			    ),
+			    FILTER(
+			        SALARY,
+			        SALARY[EffectiveDate] <= LASTDATE('DateTable'[Date]) &&
+			        SALARY[EffectiveDate] >= DATEADD(LASTDATE('DateTable'[Date]), -12, MONTH)
+			    ),
+			    FILTER(
+			        Employees,
+			        Employees[Gender] = "F"  // Replace with the actual Gender column in Employee table
+			    )
+			)
+			
+			```
+		lineageTag: 6ed95208-45cb-4c88-8f73-5cea07c58a04
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Rolling 12 Months Salary for Males' = ```
+			
+			CALCULATE(
+			    SUM(SALARY[BaseSalary]),
+			    DATESINPERIOD(
+			        'DateTable'[Date],
+			        LASTDATE('DateTable'[Date]),
+			        -12,
+			        MONTH
+			    ),
+			    FILTER(
+			        SALARY,
+			        SALARY[EffectiveDate] <= LASTDATE('DateTable'[Date]) &&
+			        SALARY[EffectiveDate] >= DATEADD(LASTDATE('DateTable'[Date]), -12, MONTH)
+			    ),
+			    FILTER(
+			        EMPLOYEES,
+			        EMPLOYEES[Gender] = "M"  // Replace with the actual Gender column in Employee table
+			    )
+			)
+			
+			```
+		lineageTag: cf5900cf-c515-4a26-b19b-d365bbcae17d
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Previous 12 Months Salary for Females' = ```
+			
+			CALCULATE(
+			    SUM(SALARY[BaseSalary]),
+			    DATESINPERIOD(
+			        'DateTable'[Date],
+			        DATEADD(LASTDATE('DateTable'[Date]), -12, MONTH),  // Shift the date back by 12 months
+			        -12,
+			        MONTH
+			    ),
+			    FILTER(
+			        SALARY,
+			        SALARY[EffectiveDate] <= DATEADD(LASTDATE('DateTable'[Date]), -12, MONTH) &&
+			        SALARY[EffectiveDate] >= DATEADD(LASTDATE('DateTable'[Date]), -24, MONTH)
+			    ),
+			    FILTER(
+			        EMPLOYEES,
+			        EMPLOYEES[Gender] = "F"  // Replace with the actual Gender column in Employee table
+			    )
+			)
+			
+			```
+		lineageTag: 2b385119-d042-4fc2-94fd-bc08d1df904d
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Previous 12 Months Salary for Males' = ```
+			
+			CALCULATE(
+			    SUM(SALARY[BaseSalary]),
+			    DATESINPERIOD(
+			        'DateTable'[Date],
+			        DATEADD(LASTDATE('DateTable'[Date]), -12, MONTH),  // Shift the date back by 12 months
+			        -12,
+			        MONTH
+			    ),
+			    FILTER(
+			        SALARY,
+			        SALARY[EffectiveDate] <= DATEADD(LASTDATE('DateTable'[Date]), -12, MONTH) &&
+			        SALARY[EffectiveDate] >= DATEADD(LASTDATE('DateTable'[Date]), -24, MONTH)
+			    ),
+			    FILTER(
+			        EMPLOYEES,
+			        Employees[Gender] = "M"  // Replace with the actual Gender column in Employee table
+			    )
+			)
+			
+			```
+		lineageTag: fc1e8080-dd1a-489c-97f7-f12f0a38d4f2
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Pay Equality Ratio Previous 12 Months (%)' = ```
+			
+			DIVIDE( 
+			    [Previous 12 Months Salary for Females],
+			    [Previous 12 Months Salary for Males],
+			    0
+			) 
+			
+			```
+		formatString: 0.00\ %;-0.00\ %;0.00\ %
+		lineageTag: 8ad73b1b-5d2b-486d-973d-d42607d3f1a8
+
+	measure 'Bonus Employee' = ```
+			
+			AVERAGEX(
+			    VALUES('Employees'[EmployeeID]),
+			    CALCULATE(
+			        SUM(Salary[Bonus]),
+			        YEAR(Salary[EffectiveDate]) IN VALUES('DateTable'[Year])
+			    )
+			)
+			
+			```
+		lineageTag: 2cd35436-4eec-4470-9d85-5d91ab39b5cf
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Avg Overtime Pay' = ```
+			
+			AVERAGEX(
+			    VALUES('Employees'[EmployeeID]),
+			    CALCULATE(
+			        AVERAGE(SALARY[OvertimePay]),
+			        YEAR(Salary[EffectiveDate]) IN VALUES('DateTable'[Year])
+			    )
+			)
+			
+			```
+		lineageTag: f95e53d3-bdbf-4405-b86e-91f8d1510170
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column SalaryID
+		dataType: double
+		lineageTag: a98516ee-adf4-4177-903d-d001b388a3ac
+		summarizeBy: count
+		sourceColumn: SalaryID
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column EmployeeID
+		dataType: double
+		lineageTag: 45528212-5994-4da3-ac25-86cc04165156
+		summarizeBy: none
+		sourceColumn: EmployeeID
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Date
+		dataType: string
+		lineageTag: 86bac06f-bd96-494a-8815-d1a4ea196898
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column BaseSalary
+		dataType: double
+		lineageTag: a40ac8b9-9ec2-4709-8b13-e15cb0dee389
+		summarizeBy: sum
+		sourceColumn: BaseSalary
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Bonus
+		dataType: double
+		lineageTag: db471f29-0163-4418-98e2-36e4d121e321
+		summarizeBy: sum
+		sourceColumn: Bonus
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column OvertimePay
+		dataType: double
+		lineageTag: 6522ce05-d4f3-491a-9532-b25c43de3d6b
+		summarizeBy: sum
+		sourceColumn: OvertimePay
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column EffectiveDate
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: a5262ca9-862f-4757-a2d9-99cdc9dce44b
+		summarizeBy: none
+		sourceColumn: EffectiveDate
+
+		annotation SummarizationSetBy = Automatic
+
+	partition SALARY = m
+		mode: import
+		source =
+				let
+				    Source = Snowflake.Databases("vo19612.west-europe.azure.snowflakecomputing.com","STRETCHDEVELOPER"),
+				    STRETCH_DEMO_DATA_Database = Source{[Name="STRETCH_DEMO_DATA",Kind="Database"]}[Data],
+				    HR_DEMO_DATA_Schema = STRETCH_DEMO_DATA_Database{[Name="HR_DEMO_DATA",Kind="Schema"]}[Data],
+				    SALARY_Table = HR_DEMO_DATA_Schema{[Name="SALARY",Kind="Table"]}[Data]
+				in
+				    SALARY_Table
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

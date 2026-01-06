@@ -1,0 +1,21 @@
+relationship AutoDetected_926a9fde-27e6-4e44-bd55-1d9e8133bef7
+	fromColumn: Fact_Cleaned.ProductIDYear_Key
+	toColumn: Products_Cleaned.ProductIDYear_Key
+
+relationship AutoDetected_b67ac234-9c0e-4189-a558-f1376217599c
+	fromColumn: Fact_Cleaned.EmployeeID
+	toColumn: Employees_Merged.EmployeeID
+
+relationship AutoDetected_0760d4f4-48f5-4b99-afa5-75746204fff0
+	fromColumn: Fact_Cleaned.CustomerID
+	toColumn: Customers_Merged.CustomerID
+
+relationship 3967400b-c537-5242-b048-196eb7d757de
+	fromColumn: Fact_Cleaned.OrderDateKey
+	toColumn: Date.Date
+
+relationship a2c261c2-04e6-50e7-5da8-9bed8ad3649d
+	isActive: false
+	fromColumn: Fact_Cleaned.ShippingDateKey
+	toColumn: Date.Date
+

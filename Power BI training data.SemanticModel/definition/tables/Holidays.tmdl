@@ -1,0 +1,356 @@
+table Holidays
+	isHidden
+	lineageTag: 4fb53db1-7e0b-43e8-bf68-62275cb3f380
+	dataCategory: Time
+
+	column 'Holiday Date'
+		isHidden
+		formatString: m/d/yyyy
+		lineageTag: 75da5677-b403-4083-b4de-0918a1252e43
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Holiday Date]
+
+	column 'Holiday Name'
+		isHidden
+		lineageTag: e1c1b760-035b-4a9f-b6c7-ad4b5576e2a3
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Holiday Name]
+
+	partition Holidays = calculated
+		mode: import
+		source = ```
+				
+				-- 
+				--    Configuration
+				-- 
+				VAR __FirstYear = YEAR ( MINX ( { MIN ( 'Fact_Cleaned'[ShippingDateKey] ), MIN ( 'Fact_Cleaned'[OrderDateKey] ) }, ''[Value] ) )
+				VAR __LastYear =  YEAR ( MAXX ( { MAX ( 'Fact_Cleaned'[ShippingDateKey] ), MAX ( 'Fact_Cleaned'[OrderDateKey] ) }, ''[Value] ) )
+				VAR __IsoCountryHolidays = "DK"
+				VAR __WorkingDays = { 2, 3, 4, 5, 6 }
+				VAR __InLieuOfPrefix = "(in lieu of "
+				VAR __InLieuOfSuffix = ")"
+				----------------------------------------
+				VAR __FilterIsoConfig =
+				    FILTER(
+				        'HolidaysDefinition',
+				        IF(
+				            CONTAINS('HolidaysDefinition', 'HolidaysDefinition'[ISO Country], __IsoCountryHolidays)
+				                || __IsoCountryHolidays = "",
+				            'HolidaysDefinition'[ISO Country] = __IsoCountryHolidays,
+				            ERROR("IsoCountryHolidays set to an unsupported country code")
+				        )
+				    )
+				VAR __ConfigGeneration =
+				    GENERATE(
+				        GENERATESERIES(__FirstYear - 1, __LastYear + 1, 1),
+				        __FilterIsoConfig
+				    )
+				VAR __GeneratedRawWithDuplicatesUnfiltered =
+				    GENERATE(
+				        __ConfigGeneration,
+				        VAR __HolidayYear = ''[Value]
+				        VAR __EasterDate =
+				            -- Code adapted from original VB version from https://www.assa.org.au/edm 
+				            VAR _EasterYear = __HolidayYear
+				            VAR _FirstDig =
+				                INT ( _EasterYear / 100 )
+				            VAR _Remain19 =
+				                MOD ( _EasterYear, 19 ) 
+				            -- Calculate PFM date
+				            VAR _temp1 =
+				                MOD (
+				                    INT ( ( _FirstDig - 15 ) / 2 )
+				                        + 202
+				                        - 11 * _Remain19
+				                        + SWITCH (
+				                            TRUE,
+				                            _FirstDig IN { 21, 24, 25, 27, 28, 29, 30, 31, 32, 34, 35, 38 },
+				                            0
+				                        ),
+				                    30
+				                )
+				            VAR _tA =
+				                _temp1 + 21
+				                    + IF ( _temp1 = 29 || ( _temp1 = 28 && _Remain19 > 10 ), -1 ) // 
+				            -- Find the next Sunday
+				            VAR _tB =
+				                MOD ( _tA - 19, 7 )
+				            VAR _tCpre =
+				                MOD ( 40 - _FirstDig, 4 )
+				            VAR _tC =
+				                _tCpre
+				                    + IF ( _tCpre = 3, 1 )
+				                    + IF ( _tCpre > 1, 1 )
+				            VAR _temp2 =
+				                MOD ( _EasterYear, 100 )
+				            VAR _tD =
+				                MOD ( _temp2 + INT ( _temp2 / 4 ), 7 )
+				            VAR _tE =
+				                MOD ( 20 - _tB - _tC - _tD, 7 )
+				                    + 1
+				            VAR _d = _tA + _tE 
+				            -- Return the date
+				            VAR _EasterDay =
+				                IF ( _d > 31, _d - 31, _d )
+				            VAR _EasterMonth =
+				                IF ( _d > 31, 4, 3 )
+				            RETURN
+				                DATE ( _EasterYear, _EasterMonth, _EasterDay ) 
+				            -- End of code adapted from original VB version from https://www.assa.org.au/edm
+				        VAR __SwedishMidSummer = 
+				            -- Compute the Midsummer day in Swedish - it is the Saturday between 20 and 26 June
+				            -- This calculation is valid only for years after 1953 
+				            -- https://sv.wikipedia.org/wiki/Midsommar_i_Sverige
+				            VAR _June20 = 
+				                DATE ( __HolidayYear, 6, 20 )
+				            RETURN
+				                DATE ( __HolidayYear, 6, 20 + (7 - WEEKDAY ( _June20, 1 ) ) )
+				            -- End of SwedishMidSummer calculation
+				        VAR __MarchEquinoxDay =
+				            INT ( 20.8431 + 0.242194 * ( __HolidayYear - 1980 ) )
+				                - INT ( ( ( __HolidayYear - 1980 ) / 4 ) )
+				        VAR __MarchEquinox = DATE ( __HolidayYear, 3, __MarchEquinoxDay )
+				        VAR __SeptemberEquinoxDay =
+				            INT ( 23.2488 + 0.242194 * ( __HolidayYear - 1980 ) )
+				                - INT ( ( __HolidayYear - 1980 ) / 4 )
+				        VAR __SeptemberEquinox = DATE ( __HolidayYear, 9, __SeptemberEquinoxDay )
+				        VAR __HolidayDate = 
+				//  Workaround for a SWITCH regression that fails on service from 2022-12-10 - revert to SWITCH and remove IF once the bug is fixed
+				//            SWITCH (
+				//                TRUE,
+				                IF ( 'HolidaysDefinition'[DayNumber] <> 0
+				                    && 'HolidaysDefinition'[WeekDayNumber] <> 0, ERROR ( "Wrong configuration in HolidaysDefinition" ),
+				                IF ( 'HolidaysDefinition'[DayNumber] <> 0
+				                    && 'HolidaysDefinition'[MonthNumber] <= 12, DATE ( __HolidayYear, 'HolidaysDefinition'[MonthNumber], 'HolidaysDefinition'[DayNumber] ),
+				                IF ( 'HolidaysDefinition'[MonthNumber] = 99, -- Easter offset
+				                    __EasterDate + 'HolidaysDefinition'[DayNumber],
+				                IF ( 'HolidaysDefinition'[MonthNumber] = 98, -- Swedish Midsummer Day
+				                    __SwedishMidSummer + 'HolidaysDefinition'[DayNumber],
+				                IF ( 'HolidaysDefinition'[MonthNumber] = 97, -- September Equinox
+				                    __SeptemberEquinox + 'HolidaysDefinition'[DayNumber],
+				                IF ( 'HolidaysDefinition'[MonthNumber] = 96, -- March Equinox
+				                    __MarchEquinox + 'HolidaysDefinition'[DayNumber],
+				                IF ( 'HolidaysDefinition'[WeekDayNumber] IN { 0, 1, 2, 3, 4, 5, 6 }
+				                    && 'HolidaysDefinition'[DayNumber] = 0
+				                    && 'HolidaysDefinition'[OffsetWeek] <> 0
+				                    && 'HolidaysDefinition'[MonthNumber] IN { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 },
+				                    VAR _ReferenceDate =
+				                        DATE ( __HolidayYear, 1
+				                            + MOD ( 'HolidaysDefinition'[MonthNumber] - 1 + IF ( 'HolidaysDefinition'[OffsetWeek] < 0, 1 ), 12 ), 1 )
+				                            - IF ( 'HolidaysDefinition'[OffsetWeek] < 0, 1 )
+				                    VAR _ReferenceWeekDayNumber =
+				                        WEEKDAY ( _ReferenceDate, 1 ) - 1
+				                    VAR _Offset =
+				                        'HolidaysDefinition'[WeekDayNumber] - _ReferenceWeekDayNumber
+				                            + 7 * 'HolidaysDefinition'[OffsetWeek]
+				                            + IF (
+				                                'HolidaysDefinition'[OffsetWeek] > 0,
+				                                IF ( 'HolidaysDefinition'[WeekDayNumber] >= _ReferenceWeekDayNumber, -7 ),
+				                                IF ( _ReferenceWeekDayNumber >= 'HolidaysDefinition'[WeekDayNumber], 7)
+				                            )
+				                RETURN
+				                    _ReferenceDate + _Offset + 'HolidaysDefinition'[OffsetDays],
+				                ERROR ( "Wrong configuration in HolidaysDefinition" )
+				            ) ) ) ) ) ) )
+				//            )
+				        VAR __HolidayWeekDay = WEEKDAY ( __HolidayDate, 1 )
+				        VAR __SubstituteHolidayOffset = 
+				//            SWITCH (
+				//                TRUE,
+				                IF ( 'HolidaysDefinition'[SubstituteHoliday] = -1,
+				                    SWITCH ( 
+				                        __HolidayWeekDay, 
+				                        1, 1,       -- If it falls on a Sunday then it is observed on Monday
+				                        7, -1,      -- If it falls on a Saturday then it is observed on Friday
+				                        0
+				                    ),
+				                IF ( 'HolidaysDefinition'[SubstituteHoliday] > 0
+				                    && NOT CONTAINS ( __WorkingDays, ''[Value], __HolidayWeekDay ),
+				                    VAR _NextWorkingWeekDay =
+				                        MINX (
+				                            FILTER ( __WorkingDays, ''[Value] > __HolidayWeekDay ),
+				                            ''[Value]
+				                        )
+				                    VAR _SubstituteWeekDay =
+				                        IF (
+				                            ISBLANK ( _NextWorkingWeekDay ),
+				                            MINX ( __WorkingDays, ''[Value] ) + 7,
+				                            _NextWorkingWeekDay
+				                        )
+				                    RETURN
+				                        _SubstituteWeekDay - __HolidayWeekDay
+				                            + ( 'HolidaysDefinition'[SubstituteHoliday] - 1 )
+				            ) )
+				//            )
+				        RETURN ROW ( 
+				            "@HolidayDate", DATE ( YEAR ( __HolidayDate ), MONTH ( __HolidayDate ), DAY ( __HolidayDate ) ),
+				            "@SubstituteHolidayOffset", __SubstituteHolidayOffset
+				        )
+				    )
+				VAR __GeneratedRawWithDuplicates =
+					FILTER (
+				        __GeneratedRawWithDuplicatesUnfiltered,
+				        ( 'HolidaysDefinition'[FirstYear] = 0 || 'HolidaysDefinition'[FirstYear] <= ''[Value] )
+				            && ( 'HolidaysDefinition'[LastYear] = 0 || 'HolidaysDefinition'[LastYear] >= ''[Value] )
+				    )
+				VAR __RawDatesUnique = 
+				    DISTINCT ( 
+				        SELECTCOLUMNS ( 
+				            __GeneratedRawWithDuplicates,
+				            "@HolidayDateUnique", [@HolidayDate]
+				        )
+				    )
+				VAR __GeneratedRaw = 
+				    GENERATE (
+				        __RawDatesUnique,
+				        VAR _FilterDate = [@HolidayDateUnique]
+				        RETURN 
+				            TOPN (
+				                1,
+				                FILTER ( 
+				                    __GeneratedRawWithDuplicates,
+				                    [@HolidayDate] = _FilterDate
+				                ),
+				                'HolidaysDefinition'[ConflictPriority],
+				                ASC,
+				                'HolidaysDefinition'[HolidayName], 
+				                ASC
+				            )
+				    )  
+				VAR __GeneratedSubstitutesOffset =
+				    SELECTCOLUMNS(
+				        FILTER ( __GeneratedRawWithDuplicates, 'HolidaysDefinition'[SubstituteHoliday] <> 0 ),
+				        "Value", ''[Value],
+				        "ISO Country", 'HolidaysDefinition'[ISO Country],
+				        "MonthNumber", 'HolidaysDefinition'[MonthNumber],
+				        "DayNumber", 'HolidaysDefinition'[DayNumber],
+				        "WeekDayNumber", 'HolidaysDefinition'[WeekDayNumber],
+				        "OffsetWeek", 'HolidaysDefinition'[OffsetWeek],
+				        "HolidayName", 'HolidaysDefinition'[HolidayName],
+				        "SubstituteHoliday", 'HolidaysDefinition'[SubstituteHoliday],
+				        "ConflictPriority", 'HolidaysDefinition'[ConflictPriority],
+				        "@HolidayDate", [@HolidayDate],
+				        "@SubstituteHolidayOffset",
+				            VAR _CurrentHolidayDate = [@HolidayDate]
+				            VAR _CurrentHolidayName = 'HolidaysDefinition'[HolidayName]
+				            VAR _OriginalSubstituteDate = [@HolidayDate] + [@SubstituteHolidayOffset]
+				            VAR _OtherHolidays = 
+				                FILTER ( 
+				                    __GeneratedRawWithDuplicates, 
+				                    [@HolidayDate] <> _CurrentHolidayDate
+				                    || 'HolidaysDefinition'[HolidayName] <> _CurrentHolidayName
+				                )
+				            VAR _ConflictDay0 = 
+				                CONTAINS ( 
+				                    _OtherHolidays,
+				                    [@HolidayDate], _OriginalSubstituteDate
+				                )
+				            VAR _ConflictDay1 = 
+				                _ConflictDay0 
+				                && CONTAINS ( 
+				                    _OtherHolidays,
+				                    [@HolidayDate], _OriginalSubstituteDate + 1
+				                )
+				            VAR _ConflictDay2 = 
+				                _ConflictDay1 
+				                && CONTAINS ( 
+				                    _OtherHolidays,
+				                    [@HolidayDate], _OriginalSubstituteDate + 2
+				                )
+				            VAR _SubstituteOffsetStep1 = [@SubstituteHolidayOffset] + _ConflictDay0 + _ConflictDay1 + _ConflictDay2
+				            VAR _HolidayDateStep1 = _CurrentHolidayDate + _SubstituteOffsetStep1
+				            VAR _HolidayWeekDayStep1 =
+				                WEEKDAY ( _HolidayDateStep1, 1 )
+				            VAR _SubstituteHolidayOffsetNonWorkingDays =
+				                IF (
+				                    NOT CONTAINS ( __WorkingDays, ''[Value], _HolidayWeekDayStep1 ),
+				                    VAR _NextWorkingWeekDayStep2 =
+				                        MINX (
+				                            FILTER ( __WorkingDays, ''[Value] > _HolidayWeekDayStep1 ),
+				                            ''[Value]
+				                        )
+				                    VAR _SubstituteWeekDay =
+				                        IF (
+				                            ISBLANK ( _NextWorkingWeekDayStep2 ),
+				                            MINX ( __WorkingDays, ''[Value] ) + 7,
+				                            _NextWorkingWeekDayStep2
+				                        )
+				                    RETURN _SubstituteWeekDay - _HolidayWeekDayStep1
+				                )
+				            VAR _SubstituteOffsetStep2 = _SubstituteOffsetStep1 + _SubstituteHolidayOffsetNonWorkingDays
+				            VAR _SubstituteDateStep2 = _OriginalSubstituteDate + _SubstituteOffsetStep2
+				            VAR _ConflictDayStep2_0 = 
+				                CONTAINS ( 
+				                    _OtherHolidays,
+				                    [@HolidayDate], _SubstituteDateStep2
+				                )
+				            VAR _ConflictDayStep2_1 = 
+				                _ConflictDayStep2_0
+				                && CONTAINS ( 
+				                    _OtherHolidays,
+				                    [@HolidayDate], _SubstituteDateStep2 + 1
+				                )
+				            VAR _ConflictDayStep2_2 = 
+				                _ConflictDayStep2_1 
+				                && CONTAINS ( 
+				                    _OtherHolidays,
+				                    [@HolidayDate], _SubstituteDateStep2 + 2
+				                )
+				            VAR _FinalSubstituteHolidayOffset = 
+				                _SubstituteOffsetStep2 + _ConflictDayStep2_0 + _ConflictDayStep2_1 + _ConflictDayStep2_2
+				            RETURN
+				                _FinalSubstituteHolidayOffset
+				        )
+				VAR __GeneratedSubstitutesExpanded =
+				    ADDCOLUMNS (
+				        __GeneratedSubstitutesOffset,
+				        "@ReplacementHolidayDate", [@HolidayDate] + [@SubstituteHolidayOffset]
+				    )
+				VAR __GeneratedSubstitutesUnique =
+				    DISTINCT ( 
+				        SELECTCOLUMNS ( 
+				            __GeneratedSubstitutesExpanded,
+				            "@UniqueReplacementHolidayDate", [@ReplacementHolidayDate]
+				        )
+				    )
+				VAR __GeneratedSubstitutes =
+				    GENERATE (
+				        __GeneratedSubstitutesUnique,
+				        TOPN (
+				            1,
+				            FILTER ( 
+				                __GeneratedSubstitutesExpanded,
+				                [@UniqueReplacementHolidayDate] = [@ReplacementHolidayDate]
+				            ),
+				            [ConflictPriority],
+				            ASC,
+				            [HolidayName], 
+				            ASC
+				        )
+				    )  
+				VAR __Generated =
+				    UNION (
+				        SELECTCOLUMNS (
+				            __GeneratedRaw,
+				            "Holiday Date", [@HolidayDate],
+				            "Holiday Name", 'HolidaysDefinition'[HolidayName]
+				        ),
+				        SELECTCOLUMNS (
+				            FILTER ( __GeneratedSubstitutes, [@SubstituteHolidayOffset] <> 0 ), 
+				            "Holiday Date", [@HolidayDate] + [@SubstituteHolidayOffset],
+				            "Holiday Name", __InLieuOfPrefix & [HolidayName]
+				                & __InLieuOfSuffix
+				        )
+				    )
+				VAR __GeneratedValidDates =
+				    FILTER ( __Generated, [Holiday Date] > 2 )
+				RETURN
+				    __GeneratedValidDates
+				```
+
+	annotation SQLBI_Template = Holidays
+
+	annotation SQLBI_TemplateTable = Holidays
+

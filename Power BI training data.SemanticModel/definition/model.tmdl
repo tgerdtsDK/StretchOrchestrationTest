@@ -1,0 +1,78 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-GB
+	dataAccessOptions
+		fastCombine
+		legacyRedirects
+		returnErrorValuesAsNull
+
+queryGroup 'Raw data'
+
+	annotation PBI_QueryGroupOrder = 0
+
+queryGroup 'Transformed data'
+
+	annotation PBI_QueryGroupOrder = 1
+
+queryGroup 'Measure table (do not delete)'
+
+	annotation PBI_QueryGroupOrder = 2
+
+extendedProperty SQLBI_BRAVO_ManageDatesConfiguration =
+		{
+		  "templateUri": "file:///C:/Users/TeresePihlkj%C3%A6rGerdts/AppData/Local/Bravo/.temp/ManageDates/Templates/Config-01.template.json",
+		  "isCurrent": false,
+		  "isCustom": false,
+		  "name": "Config-01",
+		  "description": "Standard gregorian calendar",
+		  "isoFormat": "en-GB",
+		  "isoTranslation": "en-GB",
+		  "autoScan": 1,
+		  "onlyTablesColumns": [
+		    "'Fact_Cleaned'[OrderDateKey]",
+		    "'Fact_Cleaned'[ShippingDateKey]"
+		  ],
+		  "exceptTablesColumns": [],
+		  "isoCountry": "DK",
+		  "autoNaming": 1,
+		  "targetMeasures": [],
+		  "defaults": {
+		    "firstDayOfWeek": 1
+		  },
+		  "dateAvailable": true,
+		  "dateEnabled": true,
+		  "dateTableName": "Date",
+		  "dateTableValidation": 2,
+		  "dateReferenceTableName": "DateAutoTemplate",
+		  "dateReferenceTableValidation": 2,
+		  "holidaysAvailable": true,
+		  "holidaysEnabled": true,
+		  "holidaysTableName": "Holidays",
+		  "holidaysTableValidation": 2,
+		  "holidaysDefinitionTableName": "HolidaysDefinition",
+		  "holidaysDefinitionTableValidation": 2,
+		  "timeIntelligenceAvailable": true,
+		  "timeIntelligenceEnabled": false
+		}
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBI_QueryOrder = ["CountryDimRegions","Customers","EmployeeInfo","Employees","Fact_Pivoted","MessyData","Order_Calendar","Products","Shipping_Calendar","MessyData_Cleaned","CountryDimRegions_Cleaned","Customers_Cleaned","Customers_Merged","Products_Cleaned","OrderCalendar_Cleaned","ShippingCalendar_Cleaned","EmployeeInfo_Cleaned","Employees_Cleaned","Employees_Merged","Fact_Cleaned","Measure Table"]
+
+annotation __TEdtr = 1
+
+annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["NEW_RULE"]}
+
+ref table Products_Cleaned
+ref table Employees_Merged
+ref table Fact_Cleaned
+ref table HolidaysDefinition
+ref table Holidays
+ref table DateAutoTemplate
+ref table Date
+ref table Customers_Merged
+ref table 'Measure Table'
+
+ref cultureInfo en-US
+

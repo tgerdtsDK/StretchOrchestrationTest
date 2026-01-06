@@ -1,0 +1,126 @@
+table Products_Cleaned
+	lineageTag: a26867ed-a381-441f-9056-c0fa9e365e4e
+
+	column ProductName
+		dataType: string
+		lineageTag: df4fb862-71d5-46dd-8cd9-ae2604e1b62e
+		isDefaultLabel
+		summarizeBy: none
+		sourceColumn: ProductName
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductID
+		dataType: string
+		lineageTag: 1f7e7307-dc99-4928-8fbd-22fe61b61531
+		summarizeBy: none
+		sourceColumn: ProductID
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductBrand
+		dataType: string
+		lineageTag: 9f8dd7ab-97f1-44df-8d6e-deafbf67562a
+		summarizeBy: none
+		sourceColumn: ProductBrand
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductCategory
+		dataType: string
+		lineageTag: f680a42f-83a9-43a0-944b-44a8c4524b35
+		summarizeBy: none
+		sourceColumn: ProductCategory
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductType
+		dataType: string
+		lineageTag: c1135c89-a042-4c32-9d60-424a9269b0df
+		summarizeBy: none
+		sourceColumn: ProductType
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductModel
+		dataType: string
+		lineageTag: 747edfda-ef2f-41a5-88b7-f9e392a8660a
+		summarizeBy: none
+		sourceColumn: ProductModel
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductCost
+		dataType: int64
+		formatString: 0
+		lineageTag: 4b4301c5-5f87-4ef9-837d-8d95c0f04576
+		summarizeBy: none
+		sourceColumn: ProductCost
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductPriceYear
+		dataType: int64
+		formatString: 0
+		lineageTag: 92f70f09-fc81-462d-80f0-66c04754c213
+		summarizeBy: none
+		sourceColumn: ProductPriceYear
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductIDYear_Key
+		dataType: string
+		isKey
+		lineageTag: 8013480c-e4ce-48e8-9e00-2f13987dd9ff
+		summarizeBy: none
+		sourceColumn: ProductIDYear_Key
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductListPrice
+		dataType: int64
+		formatString: 0
+		lineageTag: b78f6165-a653-48b8-91f5-59dbac27829b
+		summarizeBy: none
+		sourceColumn: ProductListPrice
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductNumber
+		dataType: int64
+		formatString: 0
+		lineageTag: ce283042-5797-4e06-9991-09bf0f892911
+		summarizeBy: none
+		sourceColumn: ProductNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column FilterProductTypeFlag
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 1336f600-18cd-487b-9039-19f3d04c5e80
+		summarizeBy: none
+		sourceColumn: FilterProductTypeFlag
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Products_Cleaned = m
+		mode: import
+		queryGroup: 'Transformed data'
+		source =
+				let
+				    Source = Excel.Workbook(Web.Contents("https://stretch2se.sharepoint.com/sites/QonnectWayWeWork/Shared%20Documents/MS%20Fabric/Power%20BI%20Intro%20-%20Lunch%20and%20Learn%20May%202025/AllTables.xlsx"), null, true),
+				    Products_Sheet = Source{[Item="Products",Kind="Sheet"]}[Data],
+				    #"Promoted Headers" = Table.PromoteHeaders(Products_Sheet, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"ProductName", type text}, {"ProductID", type text}, {"ProductBrand", type text}, {"ProductCategory", type text}, {"ProductType", type text}, {"ProductModel", type text}, {"ProductCost", Int64.Type}, {"ProductPriceYear", Int64.Type}, {"ProductIDYear_Key", type text}, {"ProductListPrice", Int64.Type}}),
+				    #"Inserted Text After Delimiter" = Table.AddColumn(#"Changed Type", "ProductNumber", each Text.AfterDelimiter([ProductName], "-"), type text),
+				    #"Reordered Columns" = Table.ReorderColumns(#"Inserted Text After Delimiter",{"ProductName", "ProductNumber", "ProductID", "ProductBrand", "ProductCategory", "ProductType", "ProductModel", "ProductCost", "ProductPriceYear", "ProductIDYear_Key", "ProductListPrice"}),
+				    #"Added Conditional Column" = Table.AddColumn(#"Reordered Columns", "FilterProductTypeFlag", each if Text.Contains([ProductType], "Filter") then 1 else 0),
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Added Conditional Column",{{"FilterProductTypeFlag", type logical}, {"ProductNumber", Int64.Type}})
+				in
+				    #"Changed Type1"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
