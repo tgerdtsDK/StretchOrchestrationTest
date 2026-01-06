@@ -1,0 +1,9 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definitionProperties/2.0.0/schema.json",
+  "version": "4.0",
+  "datasetReference": {
+    "byConnection": {
+      "connectionString": "Data Source=\"powerbi://api.powerbi.com/v1.0/myorg/Demo | Orchestration - Data | Global\";initial catalog=\"Power BI training data\";integrated security=ClaimsToken;semanticmodelid=797cbd4d-5851-4cbd-ad85-9a1e411fe3f8"
+    }
+  }
+}

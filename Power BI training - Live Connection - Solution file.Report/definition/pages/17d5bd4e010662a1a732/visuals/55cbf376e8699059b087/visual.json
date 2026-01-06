@@ -1,0 +1,196 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "55cbf376e8699059b087",
+  "position": {
+    "x": 426.44351464435147,
+    "y": 117.82426778242679,
+    "z": 2000,
+    "height": 247.69874476987448,
+    "width": 363.51464435146448,
+    "tabOrder": 2000
+  },
+  "visual": {
+    "visualType": "multiRowCard",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Measure Table"
+                    }
+                  },
+                  "Property": "Avg NetSalesTarget"
+                }
+              },
+              "queryRef": "Measure Table.Avg NetSalesTarget",
+              "nativeQueryRef": "Avg NetSalesTarget"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Measure Table"
+                    }
+                  },
+                  "Property": "Total NetSales"
+                }
+              },
+              "queryRef": "Measure Table.Total NetSales",
+              "nativeQueryRef": "Total NetSales"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Measure Table"
+                    }
+                  },
+                  "Property": "Total NetProfit"
+                }
+              },
+              "queryRef": "Measure Table.Total NetProfit",
+              "nativeQueryRef": "Total NetProfit"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Measure Table"
+                    }
+                  },
+                  "Property": "Total GrossSales"
+                }
+              },
+              "queryRef": "Measure Table.Total GrossSales",
+              "nativeQueryRef": "Total GrossSales"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Measure Table"
+                    }
+                  },
+                  "Property": "Total GrossProfit TotalYTD"
+                }
+              },
+              "queryRef": "Measure Table.Total GrossProfit TotalYTD",
+              "nativeQueryRef": "Total GrossProfit TotalYTD"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Measure Table"
+                    }
+                  },
+                  "Property": "Total GrossProfit SamePeriodLastYear"
+                }
+              },
+              "queryRef": "Measure Table.Total GrossProfit SamePeriodLastYear",
+              "nativeQueryRef": "Total GrossProfit SamePeriodLastYear"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Measure Table"
+                    }
+                  },
+                  "Property": "Total GrossProfit LY (DateAdd)"
+                }
+              },
+              "queryRef": "Measure Table.Total GrossProfit LY (DateAdd)",
+              "nativeQueryRef": "Total GrossProfit LY (DateAdd)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Measure Table"
+                    }
+                  },
+                  "Property": "Total GrossProfit"
+                }
+              },
+              "queryRef": "Measure Table.Total GrossProfit",
+              "nativeQueryRef": "Total GrossProfit"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Measure Table"
+                  }
+                },
+                "Property": "Avg NetSalesTarget"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'All measures'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Multi-row card'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

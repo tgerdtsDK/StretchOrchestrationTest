@@ -1,0 +1,66 @@
+{
+  "properties": {
+    "jobMode": "Batch",
+    "source": {
+      "type": "SnowflakeTable",
+      "connectionSettings": {
+        "type": "Snowflake",
+        "typeProperties": {
+          "database": "DEMO_DB"
+        },
+        "externalReferences": {
+          "connection": "917271c9-ffec-4fac-a4dc-cbe4382ea35e"
+        }
+      }
+    },
+    "destination": {
+      "type": "LakehouseTable",
+      "connectionSettings": {
+        "type": "Lakehouse",
+        "typeProperties": {
+          "workspaceId": "4f47767e-b56d-42f1-9c17-7bc551983f92",
+          "artifactId": "9979a15b-f39b-4128-a9f5-d1cc07017a5b",
+          "rootFolder": "Tables"
+        },
+        "externalReferences": {
+          "connection": "19ca042d-d077-430d-9b8b-05878fe4b002"
+        }
+      }
+    },
+    "policy": {
+      "timeout": "0.12:00:00"
+    }
+  },
+  "activities": [
+    {
+      "id": "fb0ab2e9-78b9-4137-9107-cba534b79ab6",
+      "properties": {
+        "source": {
+          "exportSettings": {
+            "type": "SnowflakeExportCopyCommand"
+          },
+          "datasetSettings": {
+            "schema": "SCANIA_TEST_DESTINATION",
+            "table": "FactInternetSales"
+          }
+        },
+        "destination": {
+          "writeBehavior": "Append",
+          "datasetSettings": {
+            "table": "SCANIA_TEST_DESTINATION_FactInternetSales"
+          }
+        },
+        "enableStaging": true,
+        "translator": {
+          "type": "TabularTranslator"
+        },
+        "typeConversionSettings": {
+          "typeConversion": {
+            "allowDataTruncation": true,
+            "treatBooleanAsNumber": false
+          }
+        }
+      }
+    }
+  ]
+}
