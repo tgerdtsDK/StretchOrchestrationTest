@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "Power BI training - Live Connection - Solution file"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "5d6aaa34-67f7-8404-4cb0-d16a72377ec2"
+  }
+}
